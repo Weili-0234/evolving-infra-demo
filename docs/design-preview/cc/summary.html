@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow"><title>Serving summary — Evolving Infra vs. Dynamo+SGLang</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0b0c12;--fg:#eef0f4;--muted:#8c929c;--red:#c92336;--gray:#b8c2cc;--gray-bar:#6e7680;--track:#1a1d26;--sans:'Source Sans 3',Arial,sans-serif;color-scheme:dark}
+*{box-sizing:border-box}body{margin:0;color:var(--fg);background:#050608;font:16px/1.5 var(--sans)}
+.page{width:min(1440px,calc(100% - 32px));margin:16px auto 32px}
+.wrap{position:relative;width:100%;aspect-ratio:16/9;overflow:hidden;background:var(--bg)}
+.stage{position:absolute;left:0;top:0;width:1920px;height:1080px;transform-origin:top left;background:linear-gradient(180deg,#08090c,#0f1016);overflow:hidden}
+.card{position:absolute;inset:0;opacity:0}
+.eyebrow{position:absolute;left:0;right:0;top:122px;margin:0;text-align:center;font:600 28px/1.2 var(--sans);color:var(--red)}
+.title{position:absolute;left:0;right:0;top:174px;margin:0;text-align:center;font:600 62px/1.2 var(--sans);color:var(--fg)}
+.groups{position:absolute;left:0;right:0}
+.group{position:relative;height:172px}
+.group-label{position:absolute;left:520px;top:0;font:500 29px/1.2 var(--sans);color:var(--muted)}
+.row{position:absolute;left:0;right:0;height:50px}
+.row .name{position:absolute;right:calc(1920px - 490px);top:2px;font:600 37px/46px var(--sans);white-space:nowrap}
+.row .bar{position:absolute;left:520px;top:3px;height:44px;border-radius:3px;width:0}
+.row .value{position:absolute;top:2px;font:600 37px/46px var(--sans);white-space:nowrap;font-variant-numeric:tabular-nums}
+.row .ratio{margin-left:22px}
+.row.ours .name,.row.ours .value{color:var(--red)}.row.ours .bar{background:var(--red)}
+.row.dyn .name{color:var(--gray)}.row.dyn .value{color:var(--fg)}.row.dyn .bar{background:var(--gray-bar)}
+.foot{position:absolute;left:120px;right:120px;bottom:52px;text-align:center;color:var(--muted)}
+.foot p{margin:0}.foot .main{font:500 24px/1.4 var(--sans);color:#a9aeb8}.foot .detail{font:400 20px/1.4 var(--sans);margin-top:6px}
+.black{position:absolute;inset:0;background:#000;opacity:0;pointer-events:none}
+.player{display:flex;gap:12px;align-items:center;margin-top:12px;flex-wrap:wrap}
+.player button{color:inherit;background:#141720;border:1px solid #3a3d48;border-radius:4px;padding:6px 12px;font:inherit;font-size:14px;cursor:pointer}
+.player button[aria-pressed=true]{border-color:var(--red);color:#ef9aa4}
+.player input{flex:1;min-width:120px;accent-color:var(--red)}
+.player span{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.note{color:#b9bcc6;font-size:15px;max-width:960px}
+body.export{background:var(--bg)}body.export .page{width:1920px;max-width:none;margin:0}body.export .player,body.export .note{display:none}
+</style>
+<script src="summary-data.js?v=summary-v1" defer></script><script src="summary.js?v=summary-v1" defer></script>
+</head>
+<body>
+<main class="page">
+  <div class="wrap" id="wrap"><div class="stage" id="stage" role="img" aria-label="Bar charts comparing Evolving Infra with Dynamo+SGLang"><div class="black" id="black"></div></div></div>
+  <nav class="player" aria-label="Summary controls">
+    <button type="button" id="play">Pause</button>
+    <button type="button" data-workload="cua">Computer-use agents</button><button type="button" data-workload="cc">Coding agents</button>
+    <input type="range" id="seek" min="0" max="10" step="0.01" value="0" aria-label="Position"><span id="clock">0.0 s</span>
+  </nav>
+  <p class="note" id="note"></p>
+</main>
+</body>
+</html>

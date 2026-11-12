@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Evolving Infra vs. Dynamo+SGLang — Demo with summary charts</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; color: #f1f2f5; background: #0b0c12; font: 18px/1.5 'Source Sans 3', system-ui, sans-serif; }
+    main { width: min(1600px, calc(100% - 32px)); margin: 32px auto 48px; }
+    .eyebrow { margin: 0; color: #dd4856; font-size: 13px; font-weight: 700; letter-spacing: .12em; }
+    h1 { margin: 8px 0 20px; font-size: clamp(26px, 4vw, 38px); font-weight: 600; }
+    video { display: block; width: 100%; aspect-ratio: 16 / 9; background: #090a0d; }
+    nav { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 24px; margin: 20px 0; }
+    button { border: 1px solid #555866; background: none; color: inherit; padding: 8px 14px; font: inherit; cursor: pointer; }
+    button:hover { border-color: #dd4856; }
+    a { color: #e89ba4; text-underline-offset: 3px; }
+    p { color: #b9bcc6; max-width: 960px; }
+    .note { font-size: 15px; }
+  </style>
+</head>
+<body>
+  <main>
+    <p class="eyebrow">AGENT SERVING DEMO WITH SUMMARY CHARTS</p>
+    <h1>Evolving Infra vs. Dynamo+SGLang</h1>
+    <video id="video" controls playsinline preload="metadata" poster="combined-summary-levels.jpg?v=summary-v1" aria-label="Combined computer-use and Claude Code demo with summary charts">
+      <source src="combined-summary-levels.mp4?v=summary-v1" type="video/mp4">
+      <a href="combined-summary-levels.mp4?v=summary-v1">Download the demo</a>
+    </video>
+    <nav aria-label="Video chapters and downloads">
+      <button type="button" data-time="7">01 · One computer-use agent</button>
+      <button type="button" data-time="43.9">02 · 128 agents across the cluster</button>
+      <button type="button" data-time="68.2">03 · Computer-use summary</button>
+      <button type="button" data-time="78.2">04 · One coding agent</button>
+      <button type="button" data-time="105.53">05 · 126 agents across the cluster</button>
+      <button type="button" data-time="129.83">06 · Coding summary</button>
+      <a href="combined-summary-levels.mp4?v=summary-v1" download>Download MP4 ↓</a>
+      <a href="summary.html?workload=cua">Interactive summary charts ↗</a>
+      <a href="combined.html?layout=levels&amp;v=zoom-v9">Version without summaries ↗</a>
+    </nav>
+    <p>This preview adds a short chart summary after each cluster view. Each summary has two cards: latency across all agents, then throughput, provider revenue and user cost. The video has its soundtrack.</p>
+    <p class="note">Each summary uses the same completed model calls as the fleet charts. Computer-use agents: 55-minute window, 6,652 calls on Dynamo+SGLang and 14,199 on Evolving Infra. Coding agents: 60-minute window, 7,710 and 21,302 calls. Latency is measured at the agent client. P95 time to first token interpolates linearly between ranks. User cost is all token charges divided by all input and output tokens, at demo token prices.</p>
+  </main>
+  <script>
+    const video = document.getElementById('video');
+    document.querySelectorAll('[data-time]').forEach(button => button.addEventListener('click', () => {
+      video.currentTime = Number(button.dataset.time);
+      video.play().catch(() => {});
+    }));
+  </script>
+</body>
+</html>
