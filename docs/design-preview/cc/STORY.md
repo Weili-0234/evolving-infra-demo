@@ -1,6 +1,6 @@
 # Agent serving video: one task, then concurrent agents
 
-`story.html` is a roughly 49-second candidate for the Claude Code part of the
+`story.html` is a roughly 52-second candidate for the Claude Code part of the
 demo. The original session replay, with all waiting intervals, stays in
 `session.html`. `?film=1` gives the video frame without playback controls;
 `?t=12` pauses at a chosen video second. `storyDemo.seek(seconds)` is available
@@ -8,17 +8,17 @@ for deterministic capture.
 
 The paired screen layout follows the existing computer-use video: Source Sans 3,
 gray/red screen frames, segmented progress, step counters and large clocks.
-`combined.html` plays an approximately 115-second preview with this structure:
+`combined.html` plays an approximately 120-second preview with this structure:
 
 | Start | Scene |
 |---:|---|
 | 0 s | Intro: 36 GB300 GPUs per system; 128 CUA / 126 CC concurrency |
 | 7 s | One computer-use task, retimed with each system's measured model waits |
 | 43.9 s | 128 computer-use agent slots; 55-minute measured window |
-| 66 s | One matched Claude Code session, with tool-call playback time zero |
-| ≈93.33 s | 126 coding agent slots; 60-minute measured window |
+| 68.2 s | One matched Claude Code session, with tool-call playback time zero |
+| ≈95.53 s | 126 coding agent slots; 60-minute measured window |
 
-Each fleet scene has a 0.6-second opening hold, 18 seconds of accelerated
+Each fleet scene has a 2.8-second zoom-out transition, 18 seconds of accelerated
 measured wall time, and a 3.5-second result hold. Fleet scenes default to a clean pair of larger Provider revenue and User cost
 charts, plus a horizontal cache-hit fill bar and percentage.
 `?layout=levels` adds a quieter grid inspired by S4. Both layouts have matching
@@ -197,3 +197,17 @@ end hold; reduced-motion users retain a paused view. The current cost difference
 updates with the same clock, including intervals where Evolving Infra is higher.
 Cache hit is drawn as a left-anchored 0–100% fill bar whose width expands and
 contracts with the measured percentage. There is no moving dot.
+
+## From one agent to the cluster
+
+The single-task title is “One agent’s experience”; the aggregate title is
+“Across the cluster.” At the transition, each actual completed task screen
+shrinks geometrically into one small session window inside its system’s larger
+cluster frame. Static surrounding windows show the configured concurrency.
+The clean layout then reveals the charts; the alternative settles into the
+state grid. Grid positions still represent grouped state counts.
+
+The transition holds the measurement clock at zero for 2.8 seconds. The full
+55-minute CUA and 60-minute CC data windows then play unchanged. The CUA
+screen freeze comes from the final frame before the original result slide;
+the CC freeze is captured from the native terminal after all 25 calls finish.

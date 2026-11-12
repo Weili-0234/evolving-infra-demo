@@ -9,6 +9,7 @@
   const metrics=window.CostMetrics;
   let layout=qs.get('layout')==='levels'?'levels':'clean';
   const fleetView=FleetView.prepare(run);
+  const agentZoom=AgentZoom.mount($('film'),workload,run.slots);
   $('film').dataset.layout=layout;
   let metricKey='tokens';
   const reduced=matchMedia('(prefers-reduced-motion: reduce)');
@@ -38,7 +39,7 @@
     const rate=streaming?8:120,duration=(b-a)/rate;
     segments.push({a,b,rate,start:modelVideo,end:modelVideo+duration});modelVideo+=duration;
   }
-  const INTRO=.8,SESSION_END=fleetOnly?0:INTRO+modelVideo+.7,FLEET_INTRO=.6,RUN_DURATION=18,END_HOLD=3.5,TOTAL=SESSION_END+FLEET_INTRO+RUN_DURATION+END_HOLD;
+  const INTRO=.8,SESSION_END=fleetOnly?0:INTRO+modelVideo+.7,FLEET_INTRO=2.8,RUN_DURATION=18,END_HOLD=3.5,TOTAL=SESSION_END+FLEET_INTRO+RUN_DURATION+END_HOLD;
   let time=clamp(Number(qs.get('t'))||0,0,TOTAL),playing=!qs.has('t')&&!reduced.matches,last=null,currentPhase='';
   function modelAt(video){
     const v=Math.max(0,video-INTRO);
@@ -114,9 +115,9 @@
     $('cost-formula').textContent=opt.formula;
     $('cost-tradeoff').textContent=opt.description+' '+opt.tradeoff;
     $('download-movie').hidden=!FleetView.isMovieReady(layout);
-    $('download-movie').href=FleetView.moviePath(fleetOnly?'combined':'story',metricKey,layout)+'?v=fleet-v8';
+    $('download-movie').href=FleetView.moviePath(fleetOnly?'combined':'story',metricKey,layout)+'?v=zoom-v9';
     $('download-movie').textContent=fleetOnly?'Download combined MP4 ↓':'Download MP4 ↓';
-    $('combined-link').href='combined.html?cost='+metricKey+'&layout='+(FleetView.isMovieReady(layout)?layout:'clean')+'&v=fleet-v8';
+    $('combined-link').href='combined.html?cost='+metricKey+'&layout='+(FleetView.isMovieReady(layout)?layout:'clean')+'&v=zoom-v9';
     $('film').dataset.cost=metricKey;
     $('metric-totals').textContent='Measurement-window totals ('+opt.unit+'): Dynamo+SGLang '+metrics.format(metrics.value(metrics.fromTotal(run.totals.dyn),metricKey),metricKey)+'; Evolving Infra '+metrics.format(metrics.value(metrics.fromTotal(run.totals.ours),metricKey),metricKey)+'. Provider revenue: '+money(run.totals.dyn.revenue)+' and '+money(run.totals.ours.revenue)+' respectively.';
   }
@@ -157,14 +158,18 @@
     if(phase!==currentPhase){
       currentPhase=phase;$('session-scene').hidden=phase!=='session';$('run-scene').hidden=phase!=='run';
       $('film').dataset.scene=phase;
-      $('eyebrow').textContent=phase==='session'?'ONE SESSION · CLAUDE CODE · GLM-5.2':run.slots.dyn+' CONCURRENT AGENTS · '+run.model.toUpperCase();
-      $('title').textContent=phase==='session'?'Coding agents':run.label;
-      $('setup').textContent=phase==='session'?'Same 25 model calls · 15,028 output tokens · GLM-5.2 · 126 agents at once on 36 GB300 GPUs':run.harness+' · '+run.model+' · '+(WINDOW/60)+'-minute measurement window · 36 GB300 GPUs per system';
+      $('eyebrow').textContent=workload==='cua'?'Computer use with Kimi K2.6':'Claude Code with GLM-5.2';
+      $('title').textContent=phase==='session'?'One agent’s experience':'Across the cluster';
+      $('setup').textContent=phase==='session'?'This session has 25 model calls. Each system serves 126 agents on 36 GB300 GPUs.':'Each system serves up to '+run.slots.dyn+' agents on 36 GB300 GPUs over a '+(WINDOW/60)+'-minute measurement window.';
       $('film-note').textContent=(phase==='session'?'Tool-call time omitted; illustrative terminal text. ':(layout==='levels'?'Original wall time. Tiles show grouped state counts, averaged over the preceding 60 seconds. ':'Original wall time. '))+metrics.options[metricKey].unit+'; all input and output charges included, at demo token prices.';
       document.querySelectorAll('[data-chapter]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.chapter===phase)));
       resize();
     }
-    $('film').style.opacity=phase==='session'?clamp((SESSION_END-time)/.25,0,1):clamp((time-SESSION_END)/.45,0,1);
+    $('film').style.opacity=1;
+    const zoom=agentZoom.render(phase==='run'?time-SESSION_END:-1,layout);
+    $('run-scene').style.opacity=zoom.content;
+    document.querySelector('.heading').style.opacity=zoom.heading;
+    $('setup').style.opacity=zoom.content;$('film-note').style.opacity=zoom.content;
     if(phase==='session'){
       const m=modelAt(time);renderArm('dyn',m.time);renderArm('ours',m.time);
       $('model-rate').textContent=m.time>=modelEnd?'End':m.rate+'×';

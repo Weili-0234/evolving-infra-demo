@@ -28,10 +28,10 @@
   function select(next){
     key='tokens';document.querySelectorAll('[data-option]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.option===key)));
     const d=descriptions[key];$('meaning').textContent=d[0];$('formula').textContent=d[1];$('tradeoff').textContent=d[2];
-    $('full-story').href=workload==='cc'?'story.html?cost='+key+'&layout='+layout+'&v=fleet-v8':'combined.html?cost='+key+'&chapter=cua&layout='+(FleetView.isMovieReady(layout)?layout:'clean')+'&v=fleet-v8';
+    $('full-story').href=workload==='cc'?'story.html?cost='+key+'&layout='+layout+'&v=zoom-v9':'combined.html?cost='+key+'&chapter=cua&layout='+(FleetView.isMovieReady(layout)?layout:'clean')+'&v=zoom-v9';
     $('movie').hidden=!FleetView.isMovieReady(layout);
     $('combined').textContent=FleetView.isMovieReady(layout)?'看完整合片 ↗':'纯曲线合片 ↗';
-    $('combined').href='combined.html?cost='+key+'&layout='+(FleetView.isMovieReady(layout)?layout:'clean')+'&v=fleet-v8';$('movie').href=FleetView.moviePath('combined',key,layout)+'?v=fleet-v8';
+    $('combined').href='combined.html?cost='+key+'&layout='+(FleetView.isMovieReady(layout)?layout:'clean')+'&v=zoom-v9';$('movie').href=FleetView.moviePath('combined',key,layout)+'?v=zoom-v9';
     if(api()&&api().state().workload===workload){api().setCost(key);api().setLayout(layout);seek();}
     const url=new URL(location.href);url.searchParams.set('cost',key);url.searchParams.set('workload',workload);url.searchParams.set('layout',layout);history.replaceState(null,'',url);
   }
@@ -41,7 +41,7 @@
     const atEnd=Math.abs(minute-data[workload].windowSeconds/60)<.01;
     workload=next;minute=atEnd?data[workload].windowSeconds/60:Math.min(minute,data[workload].windowSeconds/60);
     ready=false;last=null;updateCards();select(key);
-    iframe.src='story.html?film=1&fleet=1&workload='+workload+'&cost='+key+'&layout='+layout+'&t=22&v=fleet-v8';
+    iframe.src='story.html?film=1&fleet=1&workload='+workload+'&cost='+key+'&layout='+layout+'&t=22&v=zoom-v9';
   }
   function setPlaying(value){playing=value;last=null;endHold=0;$('play').textContent=value?'暂停':'播放并发场景';}
   document.querySelectorAll('[data-option]').forEach(b=>b.addEventListener('click',()=>select(b.dataset.option)));

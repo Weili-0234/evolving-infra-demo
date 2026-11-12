@@ -4,16 +4,16 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex,nofollow"><title>Coding agents — Evolving Infra vs. Dynamo+SGLang</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="story.css?v=fleet-v8">
-<link rel="stylesheet" href="story-terminal.css?v=fleet-v8">
-<link rel="stylesheet" href="cost-options.css?v=fleet-v8">
-<link rel="stylesheet" href="fleet.css?v=fleet-v8">
-<script src="session-data.js" defer></script><script src="story-run-data.js?v=fleet-v8" defer></script><script src="story-terminal.js?v=fleet-v8" defer></script><script src="fleet-data.js?v=fleet-v8" defer></script><script src="cost-metrics.js?v=fleet-v8" defer></script><script src="fleet-view.js?v=fleet-v8" defer></script><script src="story.js?v=fleet-v8" defer></script>
+<link rel="stylesheet" href="story.css?v=zoom-v9">
+<link rel="stylesheet" href="story-terminal.css?v=zoom-v9">
+<link rel="stylesheet" href="cost-options.css?v=zoom-v9">
+<link rel="stylesheet" href="fleet.css?v=zoom-v9"><link rel="stylesheet" href="agent-zoom.css?v=zoom-v9">
+<script src="session-data.js" defer></script><script src="story-run-data.js?v=zoom-v9" defer></script><script src="story-terminal.js?v=zoom-v9" defer></script><script src="fleet-data.js?v=zoom-v9" defer></script><script src="cost-metrics.js?v=zoom-v9" defer></script><script src="fleet-view.js?v=zoom-v9" defer></script><script src="agent-zoom.js?v=zoom-v9" defer></script><script src="story.js?v=zoom-v9" defer></script>
 </head>
 <body>
 <main class="page">
   <div class="film-wrap" id="film-wrap"><div class="film" id="film">
-    <header class="heading"><p class="eyebrow" id="eyebrow">CLAUDE CODE · GLM-5.2</p><h1 id="title">Coding agents</h1></header>
+    <header class="heading"><p class="eyebrow" id="eyebrow">Claude Code with GLM-5.2</p><h1 id="title">One agent’s experience</h1></header>
     <section class="session-scene" id="session-scene" aria-label="Matched session with tool-call time omitted">
       <div class="panels">
         <article class="arm dyn" id="story-dyn">
@@ -50,11 +50,11 @@
       <div class="run-foot"><p id="run-takeaway">More completed calls on the same hardware.</p><p class="scene-clock"><span>AFTER WARMUP</span><strong id="run-clock">00:00</strong><small id="fleet-rate">300×</small></p></div>
 
     </section>
-    <p class="setup" id="setup">Same 25 model calls · 15,028 output tokens · GLM-5.2 · 126 agents at once on 36 GB300 GPUs</p>
+    <p class="setup" id="setup">This session has 25 model calls. Each system serves 126 agents on 36 GB300 GPUs.</p>
     <footer class="film-note" id="film-note">Tool-call time omitted; illustrative terminal text. Metrics accumulate over completed calls; cost / 1M includes input + output, at demo token prices.</footer>
   </div></div>
   <nav class="player" aria-label="Video controls"><button id="play" type="button">Pause</button><button id="replay" type="button">Replay ↶</button><input type="range" id="seek" min="0" max="43" step="0.01" value="0" aria-label="Video position"><span class="video-time"><b id="video-clock">00:00</b> / <span id="video-duration">00:43</span></span></nav>
-  <div class="chapter-links"><button type="button" data-chapter="session">01 · Session, tools omitted</button><button type="button" data-chapter="run">02 · Concurrent agents</button><a id="download-movie" href="story.mp4?v=fleet-v8" download>Download MP4 ↓</a><a id="combined-link" href="combined.html?cost=tokens">Combined demo ↗</a><a href="cost-options.html">Compare fleet layouts ↗</a><a href="session.html">Original session timeline ↗</a><a href="index.html">All candidates ↗</a></div>
+  <div class="chapter-links"><button type="button" data-chapter="session">01 · Session, tools omitted</button><button type="button" data-chapter="run">02 · Concurrent agents</button><a id="download-movie" href="story.mp4?v=zoom-v9" download>Download MP4 ↓</a><a id="combined-link" href="combined.html?cost=tokens">Combined demo ↗</a><a href="cost-options.html">Compare fleet layouts ↗</a><a href="session.html">Original session timeline ↗</a><a href="index.html">All candidates ↗</a></div>
   <nav class="layout-picker" aria-label="Fleet presentation"><button type="button" data-layout-option="clean">Curves only</button><button type="button" data-layout-option="levels">Curves + session grid</button></nav>
   <section class="cost-picker" aria-label="User cost definition">
     <p>User cost · Per million input + output tokens</p>

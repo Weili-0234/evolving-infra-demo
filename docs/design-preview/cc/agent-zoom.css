@@ -1,0 +1,14 @@
+.agent-zoom { position: absolute; inset: 0; z-index: 5; pointer-events: none; }
+.zoom-backdrop { position: absolute; inset: 0; width: 1440px; height: 810px; }
+.zoom-cluster { position: absolute; border: 1px solid #6c7381; border-radius: 4px; background: #10121a; }
+.zoom-cluster.ours { border-color: #ad3445; }
+.zoom-cluster-name { position: absolute; left: 0; top: -42px; font: 600 28px/1.15 var(--sans); white-space: nowrap; }
+.zoom-cluster.ours .zoom-cluster-name { color: var(--red); }
+.zoom-cluster-count { position: absolute; right: 0; top: -31px; font: 500 14px/1.2 var(--sans); color: var(--muted); }
+.zoom-window { position: absolute; border: 1px solid #343c4e; border-radius: 2px; background: #171c28; }
+.zoom-window::before { content: ''; display: block; position: absolute; top: 4px; left: 4px; right: 4px; height: 2px; background: #414b60; opacity: .5; }
+.zoom-screen { position: absolute; z-index: 2; overflow: hidden; background: #10121a; outline: 1px solid var(--gray); border-radius: 2px; }
+.zoom-screen.ours { outline-color: var(--red); }
+.zoom-screen img { display: block; width: 100%; height: 100%; object-fit: fill; }
+.film[data-zooming=true] .heading { z-index: 6; }
+@media(max-width:760px){ .agent-zoom { display: none; } }
