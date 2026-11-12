@@ -178,3 +178,11 @@ animation and the compute-allocation demo use it. Each of the nine separate
 node boxes represents four GB300 GPUs. During Dynamo+SGLang restarts the recorded
 prefill and decode counts sum to eight; the remaining node is explicitly
 unavailable. Nodes are grouped by role, not identified by physical node ID.
+
+## Focused user-cost axes
+
+The user selected total-token cost A for both workloads after reviewing the
+CUA alternatives. The cost axes are $0.20–$0.24 per million input + output
+tokens for CUA and $0.30–$0.42 for CC. They do not start at zero; all tick
+values are shown. The cumulative data and reported savings (3.1% / 16.2%)
+are unchanged. Revenue axes still start at zero.

@@ -105,8 +105,8 @@
   function configureCost(){
     const opt=metrics.options[metricKey];
     const maximum=Math.max(...['dyn','ours'].flatMap(a=>run.series[a].map(r=>metrics.value(metrics.fromRow(r),metricKey)||0)));
-    const axis=axisFor(maximum);
-    plots.cost=makePlot('cost-chart',0,axis.max,axis.ticks,v=>'$'+(v===0?'0':v.toFixed(axis.decimals)));
+    const axis=workload==='cc'?{min:.30,max:.42,ticks:[.30,.32,.34,.36,.38,.40,.42],decimals:2}:{min:.20,max:.24,ticks:[.20,.21,.22,.23,.24],decimals:2};
+    plots.cost=makePlot('cost-chart',axis.min||0,axis.max,axis.ticks,v=>'$'+(v===0?'0':v.toFixed(axis.decimals)));
     $('cost-unit').textContent=opt.unit;
     $('cost-chart').setAttribute('aria-label','User cost in '+opt.unit+' over the '+(WINDOW/60)+'-minute measurement window');
     document.querySelectorAll('[data-cost-label]').forEach(n=>n.textContent=opt.header);
@@ -114,9 +114,9 @@
     $('cost-formula').textContent=opt.formula;
     $('cost-tradeoff').textContent=opt.description+' '+opt.tradeoff;
     $('download-movie').hidden=!FleetView.isMovieReady(layout);
-    $('download-movie').href=FleetView.moviePath(fleetOnly?'combined':'story',metricKey,layout)+'?v=fleet-v6-ready';
+    $('download-movie').href=FleetView.moviePath(fleetOnly?'combined':'story',metricKey,layout)+'?v=fleet-v7';
     $('download-movie').textContent=fleetOnly?'Download combined MP4 ↓':'Download MP4 ↓';
-    $('combined-link').href='combined.html?cost='+metricKey+'&layout='+(FleetView.isMovieReady(layout)?layout:'clean')+'&v=fleet-v6-ready';
+    $('combined-link').href='combined.html?cost='+metricKey+'&layout='+(FleetView.isMovieReady(layout)?layout:'clean')+'&v=fleet-v7';
     $('film').dataset.cost=metricKey;
     $('metric-totals').textContent='Measurement-window totals ('+opt.unit+'): Dynamo+SGLang '+metrics.format(metrics.value(metrics.fromTotal(run.totals.dyn),metricKey),metricKey)+'; Evolving Infra '+metrics.format(metrics.value(metrics.fromTotal(run.totals.ours),metricKey),metricKey)+'. Provider revenue: '+money(run.totals.dyn.revenue)+' and '+money(run.totals.ours.revenue)+' respectively.';
   }
