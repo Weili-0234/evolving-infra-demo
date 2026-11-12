@@ -14,6 +14,13 @@ after its result slide fades out) with this new CC segment. The appended CC
 segment fades in over 0.25 s during its opening hold. This preview does not
 replace the production video's `media/merge_demo.mp4`.
 
+The terminal interior was independently redrawn after studying the CLI UI in
+[codeaashu/claude-code](https://github.com/codeaashu/claude-code) at
+`b983a3b8106bf77cbae6d439f700cc74d74ccd15`, especially its condensed welcome,
+message/tool indentation, prompt, spinner and dark-theme colors. No upstream
+application source is bundled. Its native Ink UI, rather than the separate web
+chat wrapper, is the reference. TTFT remains an external benchmark annotation.
+
 ## Session scene
 
 The scene replays all 25 requests from matched session `fd0aecb95d7f`, using
@@ -35,7 +42,7 @@ neither shows a future whole-session total. Both are undefined before the first
 completion. Cache hit is cumulative cached input divided by cumulative input.
 User cost per million tokens is cumulative charge divided by cumulative input
 plus output tokens, multiplied by one million. Cached input is counted once.
-The terminal status shows the current first-token wait.
+The annotation beside the clock shows the current first-token wait.
 
 | Whole selected session | Dynamo | Evolving Infra |
 |---|---:|---:|
@@ -46,10 +53,15 @@ The terminal status shows the current first-token wait.
 | Input + output tokens | 1,570,158 | 1,570,158 |
 | User cost / 1M input + output tokens | $0.5159684 | $0.3634184 |
 
-The terminal transcript is illustrative, using the same text generator as the
-original candidate. Source logs contain request boundaries and token counts,
-not response text or individual token-arrival timestamps. Text reveal is
-interpolated; a completed session is not a correctness score for the illustrative
+The terminal transcript is illustrative. `story-terminal.js` draws a Claude Code
+terminal with a compact welcome, user prompt, assistant replies, Read/Update/Bash
+rows, indented results, file diffs, working indicator, prompt and permission footer.
+Tool commands, filenames, code edits and test results are authored examples, not
+recorded benchmark outputs. Both arms use the same illustration. Tool results
+appear immediately at model-call completion and add no playback time. Source logs
+contain request boundaries and token counts, not response text or individual
+token-arrival timestamps. Text reveal is interpolated within each recorded decode
+interval; a completed session is not a correctness score for the illustrative
 coding task. Cache reuse reduces prefill work, but this comparison also changes
 allocation and routing and does not isolate a cache-only causal speedup.
 

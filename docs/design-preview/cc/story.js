@@ -16,15 +16,9 @@
     rows[arm]=source[arm].map(r=>{removed+=Math.max(0,r[0]-busyEnd);busyEnd=Math.max(busyEnd,r[2]);return [r[0]-removed,r[1]-removed,r[2]-removed,...r.slice(3)];});
     const prompt=source[arm].reduce((s,r)=>s+r[3],0),cached=source[arm].reduce((s,r)=>s+r[4],0);
     stats[arm]={hit:cached/prompt,ttft:source[arm].reduce((s,r)=>s+r[1]-r[0],0),cost:source[arm].reduce((s,r)=>s+price(r),0),modelEnd:Math.max(...rows[arm].map(r=>r[2])),omitted:removed};
-    const root=$('story-'+arm),host=root.querySelector('[data-messages]');
-    const nodes=rows[arm].map((r,i)=>{
-      const box=document.createElement('div');box.className='message';
-      const head=document.createElement('div');head.className='message-head';head.textContent='● Assistant';
-      const small=document.createElement('small');small.textContent='model call '+(i+1);head.append(small);
-      const pre=document.createElement('pre');box.append(head,pre);host.append(box);
-      return {box,pre,text:window.storyTranscript(i,r[6]),shown:-1};
-    });
-    sides[arm]={root,nodes,scroll:root.querySelector('[data-scroll]'),status:root.querySelector('[data-status]'),state:root.querySelector('[data-state]'),call:root.querySelector('[data-call]'),finish:root.querySelector('[data-finish]'),progress:root.querySelector('[data-progress]'),bar:root.querySelector('[data-progress-bar]'),hit:root.querySelector('[data-hit]'),cost:root.querySelector('[data-cost]'),elapsed:root.querySelector('[data-elapsed]')};
+    const root=$('story-'+arm);
+    const native=window.CCTerminal.mount(root.querySelector('.terminal'),rows[arm]);
+    sides[arm]={root,native,status:root.querySelector('[data-status]'),state:root.querySelector('[data-state]'),wait:root.querySelector('[data-wait]'),finish:root.querySelector('[data-finish]'),progress:root.querySelector('[data-progress]'),bar:root.querySelector('[data-progress-bar]'),hit:root.querySelector('[data-hit]'),cost:root.querySelector('[data-cost]'),elapsed:root.querySelector('[data-elapsed]')};
   }
   const modelEnd=Math.max(stats.dyn.modelEnd,stats.ours.modelEnd);
   const points=[...new Set([0,...Object.values(rows).flatMap(rs=>rs.flatMap(r=>[r[1],r[2]]))])].sort((a,b)=>a-b);
@@ -46,24 +40,20 @@
   function renderArm(arm,t){
     const side=sides[arm];let done=0,active=null,decoding=false,prompt=0,cached=0,output=0,charge=0;
     rows[arm].forEach((r,i)=>{
-      const node=side.nodes[i],started=t+1e-8>=r[0],finished=t+1e-8>=r[2];
-      const fraction=finished?1:t<r[1]?0:clamp((t-r[1])/Math.max(1e-8,r[2]-r[1]),0,1);
-      node.box.hidden=!started;node.box.classList.toggle('streaming',started&&!finished&&t>=r[1]);
-      const length=Math.floor(fraction*node.text.length);
-      if(length!==node.shown){node.pre.textContent=node.text.slice(0,length);node.shown=length;}
+      const started=t+1e-8>=r[0],finished=t+1e-8>=r[2];
       if(finished){done++;prompt+=r[3];cached+=r[4];output+=r[6];charge+=price(r);}
       if(started&&!finished){active={row:r,index:i};if(t>=r[1])decoding=true;}
     });
     const finished=done===rows[arm].length,phase=finished?'done':decoding?'decode':'wait';
     side.status.dataset.phase=phase;
-    side.state.textContent=finished?'All model calls returned':decoding?'Decoding':'Waiting for first token (TTFT) · '+fmt(active?t-active.row[0]:0);
-    side.call.textContent=active?'Call '+(active.index+1):'';
+    side.state.textContent=finished?'SESSION COMPLETE':decoding?'STREAMING OUTPUT':'FIRST-TOKEN WAIT';
+    side.wait.textContent=finished?'25 / 25':decoding?'Decoding':fmt(active?t-active.row[0]:0);
     side.finish.textContent=finished?'FINISHED '+fmt(stats[arm].modelEnd):'';
     side.elapsed.textContent=fmt(Math.min(t,stats[arm].modelEnd));
     side.hit.textContent=prompt?(cached/prompt*100).toFixed(1)+'%':'—';
     side.cost.textContent=prompt+output?money(charge/(prompt+output)*1e6,3):'—';
     side.progress.innerHTML=done+' <small>/ 25</small>';side.bar.style.width=(done/25*100)+'%';
-    side.scroll.scrollTop=side.scroll.scrollHeight-side.scroll.clientHeight;
+    side.native.render(t,time,reduced.matches);
   }
   function sample(arm,t){
     const series=run.series[arm],index=Math.min(series.length-1,Math.floor(t/run.sampleSeconds));
