@@ -1,0 +1,49 @@
+/* The same fleet layout is used after both single-agent demonstrations. */
+.film[data-scene=run] .heading { top: 35px; }
+.run-scene { top: 116px; bottom: 94px; }
+.run-summaries { gap: 32px; }
+.fleet-arm-head { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; height: 36px; }
+.run-arm h2 { font-size: 28px; }
+.run-arm .fleet-count { display: flex; align-items: baseline; gap: 10px; white-space: nowrap; }
+.run-arm .fleet-count span { color: var(--muted); font-size: 12px; }
+.run-arm .fleet-count strong { font: 600 26px/1.1 var(--sans); }
+.run-arm > .agent-grid { display: grid; height: 126px; margin: 8px 0 0; gap: 4px; }
+.agent-tile { display: block; background: #232936; border: 1px solid #343c4d; border-radius: 2px; }
+.agent-tile[data-state=W] { background: #73592c; border-color: #a9803e; }
+.agent-tile[data-state=I] { background: #121720; border-color: #242b38; }
+.agent-tile.output { background: #70d3a1; border-color: #a3efc7; box-shadow: 0 0 7px #57cf9580; }
+.run-arm > .cache-gauge { display: grid; grid-template-columns: auto 1fr 55px; align-items: center; gap: 12px; margin: 9px 0 0; height: 18px; }
+.cache-gauge > span { font-size: 12px; color: var(--muted); }
+.cache-gauge > strong { font: 600 15px/1 var(--sans); text-align: right; color: var(--gray); }
+.run-arm.ours .cache-gauge > strong { color: var(--red); }
+.cache-track { position: relative; height: 2px; background: #454c5c; }
+.cache-track i { position: absolute; left: 0; top: 50%; transform: translate(-50%,-50%); width: 8px; height: 8px; background: var(--gray); border-radius: 50%; box-shadow: 0 0 0 3px #b8c2cc18; }
+.ours .cache-track i { background: var(--red); box-shadow: 0 0 0 3px #c9233620; }
+.fleet-legend { display: flex; align-items: center; justify-content: center; gap: 22px; margin-top: 8px; min-height: 14px; font: 500 10px/1.4 var(--sans); color: var(--muted); }
+.fleet-legend > span { display: flex; align-items: center; gap: 6px; }
+.fleet-legend i { width: 10px; height: 6px; display: inline-block; border-radius: 1px; }
+.key-wait { background: #a9803e; }.key-output { background: #70d3a1; }.key-tool { background: #343c4d; }
+.run-scene .charts { margin-top: 16px; }
+.run-scene .charts figure { min-height: 0; }
+.run-scene .charts svg { flex: 1 1 0; height: 0; }
+.run-scene .charts h3 { font-size: 22px; }
+.run-scene .run-foot { margin-top: 16px; }
+.run-scene .run-foot > p:first-child { font-size: 16px; }
+.film[data-scene=run] .setup { bottom: 36px; font-size: 14px; }
+.film[data-scene=run] .film-note { right: 10px; }
+@media(max-width:760px) {
+  .run-scene { position: static; }
+  .run-summaries { grid-template-columns: 1fr; gap: 22px; }
+  .fleet-arm-head { height: 32px; gap: 8px; }
+  .run-arm h2 { font-size: 22px; }
+  .run-arm .fleet-count { gap: 7px; }
+  .run-arm .fleet-count span { font-size: 9px; }
+  .run-arm .fleet-count strong { font-size: 22px; }
+  .run-arm > .agent-grid { height: 104px; gap: 3px; }
+  .run-arm > .cache-gauge { grid-template-columns: auto 1fr 49px; gap: 9px; }
+  .cache-gauge > span { font-size: 11px; }.cache-gauge > strong { font-size: 14px; }
+  .fleet-legend { flex-wrap: wrap; gap: 6px 13px; margin-top: 15px; font-size: 10px; }
+  .run-scene .charts { margin-top: 23px; }
+  .run-scene .charts svg { flex: none; height: auto; }
+  .film[data-scene=run] .setup { position: static; font-size: 12px; }
+}

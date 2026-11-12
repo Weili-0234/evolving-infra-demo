@@ -1,4 +1,4 @@
-# Video cut: one session, then one hour
+# Agent serving video: one task, then concurrent agents
 
 `story.html` is a roughly 43-second candidate for the Claude Code part of the
 demo. The original session replay, with all waiting intervals, stays in
@@ -6,13 +6,31 @@ demo. The original session replay, with all waiting intervals, stays in
 `?t=12` pauses at a chosen video second. `storyDemo.seek(seconds)` is available
 for deterministic capture.
 
-The layout matches the computer-use section of the live combined demo: Source
-Sans 3, a centered heading, rectangular gray/red screen frames, segmented
-progress strips, step counters and large per-system clocks. `combined.html`
-plays a preview combining the existing intro and CUA segment (through 56.4 s,
-after its result slide fades out) with this new CC segment. The appended CC
-segment fades in over 0.25 s during its opening hold. This preview does not
-replace the production video's `media/merge_demo.mp4`.
+The paired screen layout follows the existing computer-use video: Source Sans 3,
+gray/red screen frames, segmented progress, step counters and large clocks.
+`combined.html` plays an approximately 103-second preview with this structure:
+
+| Start | Scene |
+|---:|---|
+| 0 s | Intro: 36 GB300 GPUs per system; 128 CUA / 126 CC concurrency |
+| 7 s | One computer-use task, retimed with each system's measured model waits |
+| 43.9 s | 128 computer-use agent slots; 55-minute measured window |
+| 60 s | One matched Claude Code session, with tool-call playback time zero |
+| ≈87.33 s | 126 coding agent slots; 60-minute measured window |
+
+Each fleet scene has a 0.6-second opening hold, 12 seconds of accelerated
+measured wall time, and a 3.5-second result hold. Fleet scenes include blinking
+request activity, a thin cache-hit line with moving marker and percentage,
+Provider revenue and User cost. The baseline display name is `dynamo+sglang`.
+The preview is silent. It does not replace production `media/merge_demo.mp4`.
+
+The CUA single-task frames come from the existing merged video, SHA-256
+`331ec5c3404ef04443c63c4f76d73d934e67726d461a178e5edf7f3e91f86fc0`.
+That renderer already paired the same VM actions with actual model waits from
+baseline job 356236 and Evolving Infra job 354801. It shows full task times
+107:11 and 44:47, respectively. Titles are retouched and the old result cards
+are replaced with the fleet scene. Recorded screens, actions and clocks are
+preserved. The original source recordings are the November 5 OSWorld demo.
 
 The terminal interior was independently redrawn after studying the CLI UI in
 [codeaashu/claude-code](https://github.com/codeaashu/claude-code) at
@@ -36,7 +54,7 @@ remain 1863.4 s and 651.2 s; the animation is not a new experiment with tool
 latency changed to zero. In particular, the measured cache outcomes still come
 from the original run, with its real tool waits.
 
-Each system's clock stops when its model calls finish: 23:15 for Dynamo and
+Each system's clock stops when its model calls finish: 23:15 for dynamo+sglang and
 02:55 for Evolving Infra. Cache hit and user cost update when calls complete;
 neither shows a future whole-session total. Both are undefined before the first
 completion. Cache hit is cumulative cached input divided by cumulative input.
@@ -44,7 +62,7 @@ User cost per million tokens is cumulative charge divided by cumulative input
 plus output tokens, multiplied by one million. Cached input is counted once.
 The annotation beside the clock shows the current first-token wait.
 
-| Whole selected session | Dynamo | Evolving Infra |
+| Whole selected session | dynamo+sglang | Evolving Infra |
 |---|---:|---:|
 | Input-token-weighted cache hit | 80.8390% | 94.3499% |
 | Sum of request TTFT | 1335.2 s | 114.4 s |
@@ -65,49 +83,91 @@ interval; a completed session is not a correctness score for the illustrative
 coding task. Cache reuse reduces prefill work, but this comparison also changes
 allocation and routing and does not isolate a cache-only causal speedup.
 
-## Full-hour scene
+## Fleet scenes and cost definitions
 
-This scene shows the original wall-clock measurement window `[1800, 5400)` of
-the 126-agent benchmark, after warmup, on 36 GB300 GPUs per system. Its tool
-intervals have not been removed. Successful non-warmup calls enter the cohort
-when they complete. Values are sampled every 10 seconds and interpolated during
-playback. Cache hit is undefined before any requests complete; the plot does
-not use future requests to fill that initial sample.
+`fleet-data.js` contains 10-second cumulative samples and per-slot request states
+for both workloads. CC comes from the repository's `video/data.json`; CUA comes
+from the recorded client lifecycle logs of jobs 356236 and 354801. No prompts or
+response text are exported. CUA is configured for 128 concurrent trajectories,
+not the 126 shown in the old merged intro. CC remains 126.
 
-- Cumulative revenue = the sum of per-request token charges.
-- Cumulative average cache hit = sum(cached input tokens) / sum(input tokens).
-  This is token weighted, not an arithmetic average of request percentages or a
-  trailing-window average.
-- User cost per million tokens = cumulative revenue / (cumulative input tokens
-  + cumulative output tokens) × 1,000,000. Cached input is counted once. This value also
-  changes throughout playback; both hit and cost remain undefined before the
-  first completion sample.
+The cohorts are successful, non-warmup model calls completing inside
+`[1800, 5100)` for CUA and `[1800, 5400)` for CC, relative to each run's start.
+Tool waits remain in this wall-time axis. The CUA cohorts reproduce the archived
+scorer counts, 6,652 / 14,199. Every billed call has recorded input, cached input,
+and output usage. Values interpolate cumulative samples; there are no future
+whole-window values at time zero. Cache hit and cost are undefined until the
+first nonempty completion sample.
 
-The demo rates are $1.40/M uncached input, $0.26/M cached input, and $4.40/M
-output tokens. These are valuations at the recorded demo rates, not measured
-payments or a claim about current prices.
+Each brick represents an agent concurrency slot. Waiting-for-first-token is
+amber, model output is green, tools/between requests are gray, and idle is dark.
+Short output flashes remain visible for the preceding 10 trace seconds. These
+are measured request events, not random flashes. CC has recorded task-slot
+assignments. CUA groups requests by sender shard, trace hash and cycle, then
+assigns non-overlapping trajectory intervals to 128 slots. A trajectory starts
+at its first recorded admit and ends at TRACE_COMPLETE. If no TRACE_COMPLETE
+exists, its visual interval stops at its last recorded request completion or
+failure; this boundary is not treated as a successfully completed task. Slot
+positions are not physical workers or a comparison of paired trajectories.
 
-| Measurement hour | Dynamo | Evolving Infra |
+The thin cache line shows cumulative cached input / cumulative input, weighted
+by input tokens. It is not a trailing-window rate or the arithmetic mean of
+request percentages. Provider revenue is the cumulative sum of token charges.
+`cost-options.html` lets the reviewer switch workloads, definitions and time:
+
+| Option | User cost definition |
+|---|---|
+| A | All input + output charges / (input + output tokens) × 1M |
+| B | All input + output charges / output tokens × 1M |
+| C | All input + output charges / completed model calls |
+
+A counts cached input once. B includes input charges, so it is not an output-token
+list price. B and C also depend on the mix of calls completed by each system;
+they do not establish the cost of an identical completed task. A is the initial
+preview, while all three remain selectable. Switching preserves the chosen
+time. Each definition has a corresponding combined MP4 and CC MP4.
+
+Per-million token prices (uncached input / cached input / output):
+
+- CC: $1.40 / $0.26 / $4.40, preserving the original demo rates.
+- CUA: $0.95 / $0.16 / $4.00 for Kimi K2.6, verified against the
+  [official price table](https://platform.kimi.ai/docs/pricing/chat) on November 12, 2026.
+
+Both provider revenue and user cost are valuations at these prices, not measured
+payments. The single-session example and aggregate cohort have different scopes.
+
+### Computer-use agents — 55 minutes
+
+| Metric | dynamo+sglang | Evolving Infra |
 |---|---:|---:|
-| Completed requests | 7,710 | 21,302 |
-| Cumulative revenue | $459.7243078 | $1082.7685777 |
-| Cumulative cache hit | 90.9046% | 96.2819% |
-| Input + output tokens | 1,163,247,423 | 3,269,214,409 |
-| User cost / 1M input + output tokens | $0.3952077 | $0.3312015 |
+| Completed model calls | 6,652 | 14,199 |
+| Provider revenue | $95.9220 | $204.7980 |
+| Avg cache hit | 93.1916% | 93.9553% |
+| A: cost / 1M input + output | $0.222109 | $0.215129 |
+| B: cost / 1M output | $101.0420 | $110.6010 |
+| C: cost / model call | $0.01442002 | $0.01442341 |
 
-The whole-hour revenue ratio is 2.36×, and user cost per million tokens is
-16.2% lower.
-The selected session and the full-hour cohort must not be conflated.
+### Coding agents — 60 minutes
 
-Run data is reproducible from the repository's `video/data.json` with
-`python3 video/build_story_data.py`. The source hash is included in
-`story-run-data.js`.
+| Metric | dynamo+sglang | Evolving Infra |
+|---|---:|---:|
+| Completed model calls | 7,710 | 21,302 |
+| Provider revenue | $459.7243 | $1,082.7686 |
+| Avg cache hit | 90.9046% | 96.2819% |
+| A: cost / 1M input + output | $0.395208 | $0.331201 |
+| B: cost / 1M output | $50.6075 | $47.0983 |
+| C: cost / model call | $0.05962702 | $0.05082943 |
+
+CUA has 2.14× provider revenue; A is about 3.1% lower, B is about 9.5%
+higher, and C is nearly unchanged (0.0235% higher). CC has 2.36× provider
+revenue; A, B and C are about 16.2%, 6.9% and 14.8% lower. The preview retains
+these differences rather than assuming every cost definition must decrease.
 
 ## Workload comparison on the main page
 
 `js/shift-data.js` contains the recorded counts from the report's
 `figures/data/eval_shift_splits.csv`, with a source SHA-256. Both the Evidence
 animation and the compute-allocation demo use it. Each of the nine separate
-node boxes represents four GB300 GPUs. During Dynamo restarts the recorded
+node boxes represents four GB300 GPUs. During dynamo+sglang restarts the recorded
 prefill and decode counts sum to eight; the remaining node is explicitly
 unavailable. Nodes are grouped by role, not identified by physical node ID.

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="robots" content="noindex,nofollow">
-  <title>Computer use + Claude Code — Evolving Infra preview</title>
+  <title>Evolving Infra vs. dynamo+sglang — Agent serving demo</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
@@ -23,24 +23,44 @@
 </head>
 <body>
   <main>
-    <p class="eyebrow">EVOLVING INFRA · COMBINED PREVIEW</p>
-    <h1>Computer use, then Claude Code</h1>
-    <video id="video" controls playsinline preload="metadata" poster="../../media/merge-demo-poster.png" aria-label="Combined computer-use and Claude Code demo">
-      <source src="combined-preview.mp4?v=cc-terminal-4" type="video/mp4">
-      <a href="combined-preview.mp4?v=cc-terminal-4">Download the combined demo</a>
+    <p class="eyebrow">AGENT SERVING DEMO</p>
+    <h1>Evolving Infra vs. dynamo+sglang</h1>
+    <video id="video" controls playsinline preload="metadata" poster="combined-preview.jpg?v=cost-v5" aria-label="Combined computer-use and Claude Code demo">
+      <source src="combined-preview.mp4?v=cost-v5" type="video/mp4">
+      <a href="combined-preview.mp4?v=cost-v5">Download the combined demo</a>
     </video>
     <nav aria-label="Video chapters and downloads">
-      <button type="button" data-time="0">01 · Intro + computer use</button>
-      <button type="button" data-time="56.4">02 · Claude Code</button>
-      <a href="combined-preview.mp4?v=cc-terminal-4" download>Download combined MP4 ↓</a>
-      <a href="story.html">Interactive CC segment ↗</a>
+      <button type="button" data-time="7">01 · Computer-use task</button>
+      <button type="button" data-time="44.5">02 · 128 computer-use agents</button>
+      <button type="button" data-time="60">03 · Claude Code session</button>
+      <button type="button" data-time="87.93">04 · 126 coding agents</button>
+      <a id="download" href="combined-preview.mp4?v=cost-v5" download>Download combined MP4 ↓</a>
+      <a id="cc-link" href="story.html">Interactive CC segment ↗</a><a href="cost-options.html">Compare user-cost definitions ↗</a>
       <a href="index.html">All candidates ↗</a>
     </nav>
-    <p>The original intro and computer-use segment lead into the updated Claude Code segment. Cache hit and user cost per million tokens change as requests complete; cumulative revenue and average cache-hit curves cover the full measurement hour.</p>
-    <p class="note">In the CC session replay, tool-call time is omitted and terminal text is illustrative. Cost per million tokens uses input + output tokens at the demo token prices. The full-hour curves retain original wall time. <a href="story.html#methods">Data and playback details</a>.</p>
+    <nav aria-label="User cost definition"><button type="button" data-cost="tokens">A · Per 1M input + output tokens</button><button type="button" data-cost="output">B · Per 1M output tokens</button><button type="button" data-cost="call">C · Per model call</button></nav>
+    <p>Each workload starts with one task, then expands to many concurrent agents. Both fleet scenes show provider revenue, user cost and average cache hit rate from the recorded runs.</p>
+    <p class="note" id="metric-note"></p>
+    <p class="note">In the CC session replay, tool-call time is omitted and terminal text is illustrative. The CUA replay uses measured model waiting times. Fleet curves retain original wall time: 55 minutes for CUA, 60 minutes for CC. User cost includes all input and output charges at the stated token prices. <a href="story.html#methods">CC data and playback details</a> · <a href="story.html?workload=cua&amp;fleet=1#methods">CUA data details</a>.</p>
   </main>
+  <script src="cost-metrics.js?v=cost-v5"></script>
   <script>
-    const video = document.getElementById('video');
+    const video = document.getElementById('video'),metrics=window.CostMetrics;
+    const query=new URLSearchParams(location.search);
+    let key=Object.hasOwn(metrics.options,query.get('cost'))?query.get('cost'):'tokens';
+    function selectCost(next,retain){
+      key=next;const position=retain?video.currentTime:(query.get('chapter')==='cua'?7:0),playing=retain&&!video.paused;
+      const path=(key==='tokens'?'combined-preview.mp4':'combined-'+key+'.mp4')+'?v=cost-v5';
+      video.querySelector('source').src=path;video.load();
+      video.addEventListener('loadedmetadata',()=>{video.currentTime=Math.min(position,Math.max(0,video.duration-.1));if(playing)video.play().catch(()=>{});},{once:true});
+      document.getElementById('download').href=path;
+      document.getElementById('cc-link').href='story.html?cost='+key+'&v=cost-v5';
+      document.getElementById('metric-note').textContent=metrics.options[key].formula+'. '+metrics.options[key].description;
+      document.querySelectorAll('[data-cost]').forEach(b=>{b.setAttribute('aria-pressed',String(b.dataset.cost===key));b.style.borderColor=b.dataset.cost===key?'#dd4856':'#555866';});
+      const url=new URL(location.href);url.searchParams.set('cost',key);history.replaceState(null,'',url);
+    }
+    document.querySelectorAll('[data-cost]').forEach(b=>b.addEventListener('click',()=>selectCost(b.dataset.cost,true)));
+    selectCost(key,false);
     document.querySelectorAll('[data-time]').forEach(button => button.addEventListener('click', () => {
       video.currentTime = Number(button.dataset.time);
       video.play().catch(() => {});
