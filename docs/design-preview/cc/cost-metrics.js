@@ -2,7 +2,7 @@
 // These are all-token charges at the existing demo rates, not three price lists.
 (() => {
   const options={
-    tokens:{key:'tokens',letter:'A',name:'Per million total tokens',short:'Input + output tokens',header:'USER COST / 1M TOKENS',unit:'$ / 1M input + output tokens',decimals:3,max:.5,ticks:[0,.1,.2,.3,.4,.5],scale:1e6,
+    tokens:{key:'tokens',letter:'A',name:'Per million total tokens',short:'Input + output tokens',header:'USER COST / 1M TOKENS',unit:'$ / 1M input + output tokens',decimals:4,max:.5,ticks:[0,.1,.2,.3,.4,.5],scale:1e6,
       denominator:r=>r.input+r.output,
       formula:'Total token charges ÷ (input + output tokens) × 1,000,000',
       description:'The effective blended price for all tokens processed. Cached input is counted once.',

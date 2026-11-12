@@ -4,7 +4,8 @@
   let key='tokens';
   let layout=qs.get('layout')==='levels'?'levels':'clean';
   let workload=qs.get('workload')==='cua'?'cua':'cc';
-  let minute=data[workload].windowSeconds/60,playing=false,last=null;
+  const reduced=matchMedia('(prefers-reduced-motion: reduce)');
+  let minute=reduced.matches?data[workload].windowSeconds/60:0,playing=!reduced.matches,last=null,ready=false,endHold=0;
   const descriptions={
     tokens:['处理 token 的平均单价','总费用 ÷（输入 tokens ＋ 输出 tokens）× 1,000,000','适合对照 token 预算；长上下文和缓存输入在分母中占比很高。'],
     output:['生成同等数量输出所对应的账单','总费用 ÷ 输出 tokens × 1,000,000','输入与输出费用都计入。更接近“这些输出花了多少钱”，但仍受每次请求的输入/输出比例影响。'],
@@ -27,10 +28,10 @@
   function select(next){
     key='tokens';document.querySelectorAll('[data-option]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.option===key)));
     const d=descriptions[key];$('meaning').textContent=d[0];$('formula').textContent=d[1];$('tradeoff').textContent=d[2];
-    $('full-story').href=workload==='cc'?'story.html?cost='+key+'&layout='+layout+'&v=fleet-v7':'combined.html?cost='+key+'&chapter=cua&layout='+(FleetView.isMovieReady(layout)?layout:'clean')+'&v=fleet-v7';
+    $('full-story').href=workload==='cc'?'story.html?cost='+key+'&layout='+layout+'&v=fleet-v8':'combined.html?cost='+key+'&chapter=cua&layout='+(FleetView.isMovieReady(layout)?layout:'clean')+'&v=fleet-v8';
     $('movie').hidden=!FleetView.isMovieReady(layout);
     $('combined').textContent=FleetView.isMovieReady(layout)?'看完整合片 ↗':'纯曲线合片 ↗';
-    $('combined').href='combined.html?cost='+key+'&layout='+(FleetView.isMovieReady(layout)?layout:'clean')+'&v=fleet-v7';$('movie').href=FleetView.moviePath('combined',key,layout)+'?v=fleet-v7';
+    $('combined').href='combined.html?cost='+key+'&layout='+(FleetView.isMovieReady(layout)?layout:'clean')+'&v=fleet-v8';$('movie').href=FleetView.moviePath('combined',key,layout)+'?v=fleet-v8';
     if(api()&&api().state().workload===workload){api().setCost(key);api().setLayout(layout);seek();}
     const url=new URL(location.href);url.searchParams.set('cost',key);url.searchParams.set('workload',workload);url.searchParams.set('layout',layout);history.replaceState(null,'',url);
   }
@@ -39,18 +40,29 @@
   function setWorkload(next){
     const atEnd=Math.abs(minute-data[workload].windowSeconds/60)<.01;
     workload=next;minute=atEnd?data[workload].windowSeconds/60:Math.min(minute,data[workload].windowSeconds/60);
-    setPlaying(false);updateCards();select(key);
-    iframe.src='story.html?film=1&fleet=1&workload='+workload+'&cost='+key+'&layout='+layout+'&t=22&v=fleet-v7';
+    ready=false;last=null;updateCards();select(key);
+    iframe.src='story.html?film=1&fleet=1&workload='+workload+'&cost='+key+'&layout='+layout+'&t=22&v=fleet-v8';
   }
-  function setPlaying(value){playing=value;last=null;$('play').textContent=value?'暂停':'播放并发场景';}
+  function setPlaying(value){playing=value;last=null;endHold=0;$('play').textContent=value?'暂停':'播放并发场景';}
   document.querySelectorAll('[data-option]').forEach(b=>b.addEventListener('click',()=>select(b.dataset.option)));
   document.querySelectorAll('[data-workload]').forEach(b=>b.addEventListener('click',()=>setWorkload(b.dataset.workload)));
   $('play').addEventListener('click',()=>{if(minute>=data[workload].windowSeconds/60)minute=0;setPlaying(!playing);seek();});
   $('end').addEventListener('click',()=>{setPlaying(false);minute=data[workload].windowSeconds/60;seek();});
   $('minute').addEventListener('input',e=>{setPlaying(false);minute=Number(e.target.value);seek();});
-  iframe.addEventListener('load',()=>{setLayout(layout);seek();});
+  iframe.addEventListener('load',()=>{ready=true;last=null;setLayout(layout);seek();});
   function resize(){iframe.style.transform='scale('+($('preview').clientWidth/1440)+')';}
   new ResizeObserver(resize).observe($('preview'));
-  function tick(now){if(playing&&!document.hidden){if(last!==null)minute+=((now-last)/1000)*(data[workload].windowSeconds/60/18);if(minute>=data[workload].windowSeconds/60){minute=data[workload].windowSeconds/60;setPlaying(false);}seek();last=now;}requestAnimationFrame(tick);}
-  updateCards();setLayout(layout);if(workload==='cua')setWorkload(workload);resize();requestAnimationFrame(tick);
+  function tick(now){
+    if(!ready&&api()?.state().workload===workload){ready=true;last=null;}
+    if(playing&&ready&&!document.hidden){
+      if(last!==null){
+        const dt=(now-last)/1000,limit=data[workload].windowSeconds/60;
+        if(minute>=limit){endHold+=dt;if(endHold>=2){minute=0;endHold=0;}}
+        else minute=Math.min(limit,minute+dt*(limit/18));
+      }
+      seek();last=now;
+    }else last=null;
+    requestAnimationFrame(tick);
+  }
+  updateCards();setLayout(layout);if(workload==='cua')setWorkload(workload);resize();setPlaying(playing);requestAnimationFrame(tick);
 })();

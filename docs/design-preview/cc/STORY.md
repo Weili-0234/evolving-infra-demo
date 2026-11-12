@@ -20,7 +20,7 @@ gray/red screen frames, segmented progress, step counters and large clocks.
 
 Each fleet scene has a 0.6-second opening hold, 18 seconds of accelerated
 measured wall time, and a 3.5-second result hold. Fleet scenes default to a clean pair of larger Provider revenue and User cost
-charts, plus a thin cache-hit line with moving marker and percentage.
+charts, plus a horizontal cache-hit fill bar and percentage.
 `?layout=levels` adds a quieter grid inspired by S4. Both layouts have matching
 CUA and CC video exports using the selected cost definition A. The baseline display name is `Dynamo+SGLang`.
 The preview is silent. It does not replace production `media/merge_demo.mp4`.
@@ -115,7 +115,7 @@ sender shard, trace hash and cycle. A trace runs from its first recorded admit
 to TRACE_COMPLETE, or its last recorded request completion/failure if no trace
 completion exists. The latter is an activity boundary, not a completed task.
 
-The thin cache line shows cumulative cached input / cumulative input, weighted
+The cache fill bar shows cumulative cached input / cumulative input, weighted
 by input tokens. It is not a trailing-window rate or the arithmetic mean of
 request percentages. Provider revenue is the cumulative sum of token charges.
 User selected A on November 12. `cost-options.html` now switches workloads,
@@ -186,3 +186,14 @@ CUA alternatives. The cost axes are $0.20–$0.24 per million input + output
 tokens for CUA and $0.30–$0.42 for CC. They do not start at zero; all tick
 values are shown. The cumulative data and reported savings (3.1% / 16.2%)
 are unchanged. Revenue axes still start at zero.
+
+## Live metric presentation
+
+User cost remains definition A and recalculates at the current playback time,
+using cumulative charges divided by cumulative input plus output tokens. Four
+decimal places retain small measured changes that three-place rounding hid.
+The comparison page plays from the start by default and loops after a two-second
+end hold; reduced-motion users retain a paused view. The current cost difference
+updates with the same clock, including intervals where Evolving Infra is higher.
+Cache hit is drawn as a left-anchored 0–100% fill bar whose width expands and
+contracts with the measured percentage. There is no moving dot.

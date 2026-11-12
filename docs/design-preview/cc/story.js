@@ -107,16 +107,16 @@
     const maximum=Math.max(...['dyn','ours'].flatMap(a=>run.series[a].map(r=>metrics.value(metrics.fromRow(r),metricKey)||0)));
     const axis=workload==='cc'?{min:.30,max:.42,ticks:[.30,.32,.34,.36,.38,.40,.42],decimals:2}:{min:.20,max:.24,ticks:[.20,.21,.22,.23,.24],decimals:2};
     plots.cost=makePlot('cost-chart',axis.min||0,axis.max,axis.ticks,v=>'$'+(v===0?'0':v.toFixed(axis.decimals)));
-    $('cost-unit').textContent=opt.unit;
+    $('cost-unit').textContent='Average so far · '+opt.unit;
     $('cost-chart').setAttribute('aria-label','User cost in '+opt.unit+' over the '+(WINDOW/60)+'-minute measurement window');
     document.querySelectorAll('[data-cost-label]').forEach(n=>n.textContent=opt.header);
     document.querySelectorAll('[data-cost-option]').forEach(n=>n.setAttribute('aria-pressed',String(n.dataset.costOption===metricKey)));
     $('cost-formula').textContent=opt.formula;
     $('cost-tradeoff').textContent=opt.description+' '+opt.tradeoff;
     $('download-movie').hidden=!FleetView.isMovieReady(layout);
-    $('download-movie').href=FleetView.moviePath(fleetOnly?'combined':'story',metricKey,layout)+'?v=fleet-v7';
+    $('download-movie').href=FleetView.moviePath(fleetOnly?'combined':'story',metricKey,layout)+'?v=fleet-v8';
     $('download-movie').textContent=fleetOnly?'Download combined MP4 ↓':'Download MP4 ↓';
-    $('combined-link').href='combined.html?cost='+metricKey+'&layout='+(FleetView.isMovieReady(layout)?layout:'clean')+'&v=fleet-v7';
+    $('combined-link').href='combined.html?cost='+metricKey+'&layout='+(FleetView.isMovieReady(layout)?layout:'clean')+'&v=fleet-v8';
     $('film').dataset.cost=metricKey;
     $('metric-totals').textContent='Measurement-window totals ('+opt.unit+'): Dynamo+SGLang '+metrics.format(metrics.value(metrics.fromTotal(run.totals.dyn),metricKey),metricKey)+'; Evolving Infra '+metrics.format(metrics.value(metrics.fromTotal(run.totals.ours),metricKey),metricKey)+'. Provider revenue: '+money(run.totals.dyn.revenue)+' and '+money(run.totals.ours.revenue)+' respectively.';
   }
@@ -137,16 +137,20 @@
     for(const arm of ['dyn','ours']){
       const r=values[arm];$('run-'+arm+'-calls').textContent=Math.floor(r.calls+1e-8).toLocaleString('en-US');
       $('run-'+arm+'-hit').textContent=r.hit===null?'—':(r.hit*100).toFixed(1)+'%';
-      const marker=$('cache-marker-'+arm);marker.hidden=r.hit===null;if(r.hit!==null)marker.style.left=(r.hit*100)+'%';
+      const fill=$('cache-fill-'+arm),track=fill.parentElement;
+      fill.style.width=(r.hit===null?0:r.hit*100)+'%';
+      if(r.hit===null){track.removeAttribute('aria-valuenow');track.setAttribute('aria-valuetext','No completed calls yet');}
+      else{track.setAttribute('aria-valuenow',(r.hit*100).toFixed(2));track.setAttribute('aria-valuetext',(r.hit*100).toFixed(1)+' percent');}
       if(layout==='levels')fleetView.render(arm,t,tiles[arm]);
       $('revenue-'+arm).textContent=money(r.revenue);
       $('cost-'+arm).textContent=metrics.format(r.cost,metricKey);
     }
     drawPlot('revenue',t,values);drawPlot('cost',t,values);$('run-clock').textContent=fmt(t);
-    const lower=(1-metrics.value(metrics.fromTotal(run.totals.ours),metricKey)/metrics.value(metrics.fromTotal(run.totals.dyn),metricKey))*100;
-    const ratio=run.totals.ours.revenue/run.totals.dyn.revenue;
-    const costResult=Math.abs(lower)<.1?'Similar user cost (&lt;0.1% difference)':Math.abs(lower).toFixed(1)+'% '+(lower>=0?'lower':'higher')+' user cost';
-    $('run-takeaway').innerHTML=t>=WINDOW?'At '+(WINDOW/60)+' min: <b>'+ratio.toFixed(2)+'× provider revenue</b> · <b>'+costResult+'.</b>':'Serving up to '+run.slots.dyn+' agents concurrently on each system.';
+    const current=values.dyn.cost!==null&&values.ours.cost!==null&&values.dyn.cost>0;
+    const lower=current?(1-values.ours.cost/values.dyn.cost)*100:null;
+    const ratio=values.dyn.revenue>0?values.ours.revenue/values.dyn.revenue:null;
+    const costResult=lower===null?'':Math.abs(lower)<.1?'Similar user cost (&lt;0.1% difference)':Math.abs(lower).toFixed(1)+'% '+(lower>=0?'lower':'higher')+' user cost';
+    $('run-takeaway').innerHTML=current?(t>=WINDOW?'At '+(WINDOW/60)+' min: <b>'+ratio.toFixed(2)+'× provider revenue</b> · <b>'+costResult+'.</b>':'At '+fmt(t)+': <b>'+costResult+'.</b>'):'Serving up to '+run.slots.dyn+' agents concurrently on each system.';
   }
   function render(){
     const phase=time<SESSION_END?'session':'run';
