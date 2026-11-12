@@ -1,6 +1,6 @@
 # Agent serving video: one task, then concurrent agents
 
-`story.html` is a roughly 43-second candidate for the Claude Code part of the
+`story.html` is a roughly 49-second candidate for the Claude Code part of the
 demo. The original session replay, with all waiting intervals, stays in
 `session.html`. `?film=1` gives the video frame without playback controls;
 `?t=12` pauses at a chosen video second. `storyDemo.seek(seconds)` is available
@@ -8,20 +8,21 @@ for deterministic capture.
 
 The paired screen layout follows the existing computer-use video: Source Sans 3,
 gray/red screen frames, segmented progress, step counters and large clocks.
-`combined.html` plays an approximately 103-second preview with this structure:
+`combined.html` plays an approximately 115-second preview with this structure:
 
 | Start | Scene |
 |---:|---|
 | 0 s | Intro: 36 GB300 GPUs per system; 128 CUA / 126 CC concurrency |
 | 7 s | One computer-use task, retimed with each system's measured model waits |
 | 43.9 s | 128 computer-use agent slots; 55-minute measured window |
-| 60 s | One matched Claude Code session, with tool-call playback time zero |
-| ≈87.33 s | 126 coding agent slots; 60-minute measured window |
+| 66 s | One matched Claude Code session, with tool-call playback time zero |
+| ≈93.33 s | 126 coding agent slots; 60-minute measured window |
 
-Each fleet scene has a 0.6-second opening hold, 12 seconds of accelerated
-measured wall time, and a 3.5-second result hold. Fleet scenes include blinking
-request activity, a thin cache-hit line with moving marker and percentage,
-Provider revenue and User cost. The baseline display name is `dynamo+sglang`.
+Each fleet scene has a 0.6-second opening hold, 18 seconds of accelerated
+measured wall time, and a 3.5-second result hold. Fleet scenes default to a clean pair of larger Provider revenue and User cost
+charts, plus a thin cache-hit line with moving marker and percentage.
+`?layout=levels` adds a quieter grid inspired by S4. Both layouts have matching
+CUA and CC video exports using the selected cost definition A. The baseline display name is `dynamo+sglang`.
 The preview is silent. It does not replace production `media/merge_demo.mp4`.
 
 The CUA single-task frames come from the existing merged video, SHA-256
@@ -99,21 +100,27 @@ and output usage. Values interpolate cumulative samples; there are no future
 whole-window values at time zero. Cache hit and cost are undefined until the
 first nonempty completion sample.
 
-Each brick represents an agent concurrency slot. Waiting-for-first-token is
-amber, model output is green, tools/between requests are gray, and idle is dark.
-Short output flashes remain visible for the preceding 10 trace seconds. These
-are measured request events, not random flashes. CC has recorded task-slot
-assignments. CUA groups requests by sender shard, trace hash and cycle, then
-assigns non-overlapping trajectory intervals to 128 slots. A trajectory starts
-at its first recorded admit and ends at TRACE_COMPLETE. If no TRACE_COMPLETE
-exists, its visual interval stops at its last recorded request completion or
-failure; this boundary is not treated as a successfully completed task. Slot
-positions are not physical workers or a comparison of paired trajectories.
+The optional grid uses S4-style grouped state levels: waiting fills from the
+bottom, generating is stacked above it, and tools/between calls occupy the next
+rows; idle space is dark. Small hourglass, generation and terminal symbols
+identify the states. Tile fills are muted, with no glow or completion flashes.
+Counts are averaged over the current and preceding six 10-second state samples
+(a trailing 60-second span), then interpolated. Tile positions represent counts,
+not persistent session identities. This averaging applies only to the state
+visualization; revenue, cost and cache-hit values keep their original cumulative
+samples. Every displayed state-count vector still sums to configured concurrency.
+
+Underlying CC activity uses recorded task slots. CUA groups client events by
+sender shard, trace hash and cycle. A trace runs from its first recorded admit
+to TRACE_COMPLETE, or its last recorded request completion/failure if no trace
+completion exists. The latter is an activity boundary, not a completed task.
 
 The thin cache line shows cumulative cached input / cumulative input, weighted
 by input tokens. It is not a trailing-window rate or the arithmetic mean of
 request percentages. Provider revenue is the cumulative sum of token charges.
-`cost-options.html` lets the reviewer switch workloads, definitions and time:
+User selected A on November 12. `cost-options.html` now switches workloads,
+visual layouts and time; all current previews use A. The normalization options
+considered were:
 
 | Option | User cost definition |
 |---|---|
@@ -123,9 +130,9 @@ request percentages. Provider revenue is the cumulative sum of token charges.
 
 A counts cached input once. B includes input charges, so it is not an output-token
 list price. B and C also depend on the mix of calls completed by each system;
-they do not establish the cost of an identical completed task. A is the initial
-preview, while all three remain selectable. Switching preserves the chosen
-time. Each definition has a corresponding combined MP4 and CC MP4.
+they do not establish the cost of an identical completed task. A is the selected
+definition for both layouts. Switching layouts preserves the chosen time. Each
+layout has a corresponding combined MP4 and CC MP4.
 
 Per-million token prices (uncached input / cached input / output):
 

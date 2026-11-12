@@ -47,3 +47,34 @@
   .run-scene .charts svg { flex: none; height: auto; }
   .film[data-scene=run] .setup { position: static; font-size: 12px; }
 }
+/* Curves first; the alternate grid follows S4's stable, bottom-up levels. */
+.film[data-layout=clean] .agent-grid,.film[data-layout=clean] .fleet-legend { display: none; }
+.film[data-layout=clean][data-scene=run] .heading { top: 52px; }
+.film[data-layout=clean] .run-scene { top: 153px; bottom: 102px; left: 42px; right: 42px; }
+.film[data-layout=clean] .run-summaries { gap: 54px; padding-bottom: 26px; border-bottom: 1px solid #252a35; }
+.film[data-layout=clean] .cache-gauge { margin-top: 19px; }
+.film[data-layout=clean] .charts { margin-top: 32px; gap: 54px; }
+.film[data-layout=clean] .charts h3 { font-size: 27px; }
+.film[data-layout=clean] .curve-values { margin-top: 12px; }
+.film[data-layout=clean] .curve-values b { font-size: 30px; }
+.film[data-layout=levels] .agent-grid { height: 174px; gap: 5px; margin-top: 12px; padding: 10px; border: 1px solid #454b58; border-radius: 3px; background: #10121a; }
+.film[data-layout=levels] .ours .agent-grid { border-color: #74333e; }
+.film[data-layout=levels] .agent-tile { border: 0; border-radius: 2px; box-shadow: none; }
+.film[data-layout=levels] .key-wait { background: #4a3812; border: 1px solid #b07f2a; }
+.film[data-layout=levels] .key-output { background: #10372a; border: 1px solid #308e6a; }
+.film[data-layout=levels] .key-tool { background: #172846; border: 1px solid #364f79; }
+.layout-picker { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
+.layout-picker button { font-size: 14px; padding: 8px 14px; }
+.layout-picker button[aria-pressed=true] { border-color: #c92336; color: #ef9aa4; }
+body.export .layout-picker { display: none; }
+@media(max-width:760px){
+ .film[data-layout=clean] .run-scene { position: static; }
+ .film[data-layout=clean] .run-summaries { gap: 24px; padding-bottom: 24px; }
+ .film[data-layout=clean] .charts { margin-top: 26px; gap: 26px; }
+ .film[data-layout=clean] .charts h3 { font-size: 22px; }
+ .film[data-layout=clean] .curve-values b { font-size: 23px; }
+ .film[data-layout=levels] .agent-grid { height: 130px; gap: 3px; }
+}
+
+.agent-tile { position: relative; }
+.agent-tile svg { display: block; position: absolute; width: 11px; height: 11px; top: 50%; left: 50%; transform: translate(-50%,-50%); }

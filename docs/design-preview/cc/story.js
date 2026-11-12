@@ -7,7 +7,10 @@
   document.title=run.label+' — Evolving Infra vs. dynamo+sglang';
   const fleetOnly=qs.has('fleet')||workload==='cua';
   const metrics=window.CostMetrics;
-  let metricKey=Object.hasOwn(metrics.options,qs.get('cost'))?qs.get('cost'):'tokens';
+  let layout=qs.get('layout')==='levels'?'levels':'clean';
+  const fleetView=FleetView.prepare(run);
+  $('film').dataset.layout=layout;
+  let metricKey='tokens';
   const reduced=matchMedia('(prefers-reduced-motion: reduce)');
   if(qs.has('film'))document.body.classList.add('export');
   const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
@@ -35,7 +38,7 @@
     const rate=streaming?8:120,duration=(b-a)/rate;
     segments.push({a,b,rate,start:modelVideo,end:modelVideo+duration});modelVideo+=duration;
   }
-  const INTRO=.8,SESSION_END=fleetOnly?0:INTRO+modelVideo+.7,FLEET_INTRO=.6,RUN_DURATION=12,END_HOLD=3.5,TOTAL=SESSION_END+FLEET_INTRO+RUN_DURATION+END_HOLD;
+  const INTRO=.8,SESSION_END=fleetOnly?0:INTRO+modelVideo+.7,FLEET_INTRO=.6,RUN_DURATION=18,END_HOLD=3.5,TOTAL=SESSION_END+FLEET_INTRO+RUN_DURATION+END_HOLD;
   let time=clamp(Number(qs.get('t'))||0,0,TOTAL),playing=!qs.has('t')&&!reduced.matches,last=null,currentPhase='';
   function modelAt(video){
     const v=Math.max(0,video-INTRO);
@@ -73,13 +76,13 @@
     const grid=$('grid-'+arm),count=run.slots[arm];
     grid.style.gridTemplateColumns='repeat('+(count===126?14:16)+',minmax(0,1fr))';
     grid.setAttribute('aria-label',count+' concurrent agent slots');
-    tiles[arm]=Array.from({length:count},(_,i)=>{const tile=document.createElement('i');tile.className='agent-tile';tile.dataset.slot=String(i+1);grid.append(tile);return tile;});
+    tiles[arm]=Array.from({length:count},(_,i)=>{const tile=document.createElement('i');tile.className='agent-tile';tile.dataset.slot=String(i+1);tile.innerHTML='<svg viewBox="0 0 16 16" aria-hidden="true"><path data-glyph="W" fill="#f0a830" d="M4 2h8L4 14h8Z"/><path data-glyph="G" fill="#3ecf8e" d="M8 0Q8 8 16 8Q8 8 8 16Q8 8 0 8Q8 8 8 0"/><path data-glyph="T" fill="none" stroke="#5b8def" stroke-width="1.7" d="m3 3 4 5-4 5m5-1h6"/></svg>';tile._glyphs=Object.fromEntries([...tile.querySelectorAll('[data-glyph]')].map(n=>[n.dataset.glyph,n]));grid.append(tile);return tile;});
   }
-  $('brick-count').textContent='One brick = one agent slot';
+  $('brick-count').textContent='Grouped by state · trailing 60 s average';
   document.querySelectorAll('[data-session-method]').forEach(n=>n.hidden=fleetOnly);
   document.querySelector('[data-chapter="session"]').hidden=fleetOnly;
   $('workload-method').textContent=run.harness+' · '+run.model+' · '+run.slots.dyn+' / '+run.slots.ours+' concurrent slots (dynamo+sglang / Evolving Infra) · 36 GB300 GPUs per system. The measured window is ['+run.windowStartSeconds+', '+(run.windowStartSeconds+WINDOW)+') seconds after each run starts ('+(WINDOW/60)+' minutes after warmup). Successful non-warmup completions enter the billing cohort. Curves retain original wall time, including tool calls, and interpolate '+run.sampleSeconds+'-second cumulative samples.';
-  $('price-method').textContent='Provider revenue and user cost are valuations at these per-million token rates: $'+run.ratesPerMillion.input.toFixed(2)+' uncached input, $'+run.ratesPerMillion.cachedInput.toFixed(2)+' cached input, $'+run.ratesPerMillion.output.toFixed(2)+' output. All three cost definitions include the same charges. They are not measured payments. The selected-session example and aggregate cohort have different scopes.';
+  $('price-method').textContent='Provider revenue and user cost are valuations at these per-million token rates: $'+run.ratesPerMillion.input.toFixed(2)+' uncached input, $'+run.ratesPerMillion.cachedInput.toFixed(2)+' cached input, $'+run.ratesPerMillion.output.toFixed(2)+' output. User cost divides total charges by input plus output tokens, multiplied by one million. They are not measured payments. The selected-session example and aggregate cohort have different scopes.';
   function axisFor(maximum){
     const target=maximum*1.1/4,power=10**Math.floor(Math.log10(Math.max(target,1e-9)));
     const step=[1,2,2.5,5,10].map(x=>x*power).find(x=>x>=target)||power*10;
@@ -87,11 +90,12 @@
     return {max,ticks:Array.from({length:Math.round(max/step)+1},(_,i)=>i*step),decimals:Math.max(0,-Math.floor(Math.log10(step))+(step/power===2.5?1:0))};
   }
   function makePlot(id,min,max,ticks,format){
-    const svg=$(id),x=t=>52+(t/WINDOW)*560,y=v=>218-(v-min)/(max-min)*200;
+    const svg=$(id),height=layout==='clean'?265:180,bottom=height-47,x=t=>52+(t/WINDOW)*560,y=v=>bottom-(v-min)/(max-min)*(bottom-18);
+    svg.setAttribute('viewBox','0 0 630 '+height);
     let markup='';
     for(const v of ticks)markup+='<line class="plot-grid" x1="52" x2="612" y1="'+y(v)+'" y2="'+y(v)+'"/><text class="plot-axis" text-anchor="end" x="42" y="'+(y(v)+4)+'">'+format(v)+'</text>';
-    for(const m of [...Array(Math.floor(WINDOW/900)+1)].map((_,i)=>i*15).filter(m=>m<WINDOW/60).concat(WINDOW/60))markup+='<text class="plot-axis" text-anchor="middle" x="'+x(m*60)+'" y="239">'+m+'</text>';
-    markup+='<text class="plot-axis" text-anchor="middle" x="332" y="260">Time after warmup (min)</text><line class="plot-cursor" y1="18" y2="218"/>';
+    for(const m of [...Array(Math.floor(WINDOW/900)+1)].map((_,i)=>i*15).filter(m=>m<WINDOW/60).concat(WINDOW/60))markup+='<text class="plot-axis" text-anchor="middle" x="'+x(m*60)+'" y="'+(height-26)+'">'+m+'</text>';
+    markup+='<text class="plot-axis" text-anchor="middle" x="332" y="'+(height-5)+'">Time after warmup (min)</text><line class="plot-cursor" y1="18" y2="'+bottom+'"/>';
     for(const arm of ['dyn','ours'])markup+='<path class="plot-line plot-'+arm+'" data-line="'+arm+'"/><circle class="plot-dot" data-dot="'+arm+'" r="4" fill="'+(arm==='ours'?'#c92336':'#b8c2cc')+'"/>';
     svg.innerHTML=markup;
     return {svg,x,y,lines:Object.fromEntries(['dyn','ours'].map(a=>[a,svg.querySelector('[data-line="'+a+'"]')])),dots:Object.fromEntries(['dyn','ours'].map(a=>[a,svg.querySelector('[data-dot="'+a+'"]')]))};
@@ -109,9 +113,10 @@
     document.querySelectorAll('[data-cost-option]').forEach(n=>n.setAttribute('aria-pressed',String(n.dataset.costOption===metricKey)));
     $('cost-formula').textContent=opt.formula;
     $('cost-tradeoff').textContent=opt.description+' '+opt.tradeoff;
-    $('download-movie').href=(fleetOnly?(metricKey==='tokens'?'combined-preview.mp4':'combined-'+metricKey+'.mp4'):(metricKey==='tokens'?'story.mp4':'story-'+metricKey+'.mp4'))+'?v=cost-v5';
+    $('download-movie').hidden=!FleetView.isMovieReady(layout);
+    $('download-movie').href=FleetView.moviePath(fleetOnly?'combined':'story',metricKey,layout)+'?v=fleet-v6';
     $('download-movie').textContent=fleetOnly?'Download combined MP4 ↓':'Download MP4 ↓';
-    $('combined-link').href='combined.html?cost='+metricKey+'&v=cost-v5';
+    $('combined-link').href='combined.html?cost='+metricKey+'&layout='+(FleetView.isMovieReady(layout)?layout:'clean')+'&v=fleet-v6';
     $('film').dataset.cost=metricKey;
     $('metric-totals').textContent='Measurement-window totals ('+opt.unit+'): dynamo+sglang '+metrics.format(metrics.value(metrics.fromTotal(run.totals.dyn),metricKey),metricKey)+'; Evolving Infra '+metrics.format(metrics.value(metrics.fromTotal(run.totals.ours),metricKey),metricKey)+'. Provider revenue: '+money(run.totals.dyn.revenue)+' and '+money(run.totals.ours.revenue)+' respectively.';
   }
@@ -133,9 +138,7 @@
       const r=values[arm];$('run-'+arm+'-calls').textContent=Math.floor(r.calls+1e-8).toLocaleString('en-US');
       $('run-'+arm+'-hit').textContent=r.hit===null?'—':(r.hit*100).toFixed(1)+'%';
       const marker=$('cache-marker-'+arm);marker.hidden=r.hit===null;if(r.hit!==null)marker.style.left=(r.hit*100)+'%';
-      const index=Math.min(run.grid[arm].length-1,Math.floor(t/run.sampleSeconds));
-      const states=run.grid[arm][index],flashes=run.flashes[arm][index];
-      tiles[arm].forEach((tile,i)=>{const state=states[i],flash=state==='G'||flashes[i]==='1';tile.dataset.state=state;tile.classList.toggle('output',flash);});
+      if(layout==='levels')fleetView.render(arm,t,tiles[arm]);
       $('revenue-'+arm).textContent=money(r.revenue);
       $('cost-'+arm).textContent=metrics.format(r.cost,metricKey);
     }
@@ -153,7 +156,7 @@
       $('eyebrow').textContent=phase==='session'?'ONE SESSION · CLAUDE CODE · GLM-5.2':run.slots.dyn+' CONCURRENT AGENTS · '+run.model.toUpperCase();
       $('title').textContent=phase==='session'?'Coding agents':run.label;
       $('setup').textContent=phase==='session'?'Same 25 model calls · 15,028 output tokens · GLM-5.2 · 126 agents at once on 36 GB300 GPUs':run.harness+' · '+run.model+' · '+(WINDOW/60)+'-minute measurement window · 36 GB300 GPUs per system';
-      $('film-note').textContent=(phase==='session'?'Tool-call time omitted; illustrative terminal text. ':'Original wall time. Output flashes include the last 10 trace seconds. ')+metrics.options[metricKey].unit+'; all input and output charges included, at demo token prices.';
+      $('film-note').textContent=(phase==='session'?'Tool-call time omitted; illustrative terminal text. ':(layout==='levels'?'Original wall time. Tiles show grouped state counts, averaged over the preceding 60 seconds. ':'Original wall time. '))+metrics.options[metricKey].unit+'; all input and output charges included, at demo token prices.';
       document.querySelectorAll('[data-chapter]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.chapter===phase)));
       resize();
     }
@@ -179,10 +182,18 @@
   addEventListener('keydown',e=>{if(e.code==='Space'&&!['INPUT','BUTTON','SUMMARY'].includes(document.activeElement.tagName)){e.preventDefault();setPlaying(!playing);}});
   document.addEventListener('visibilitychange',()=>{last=null;});
   function tick(now){if(playing&&!document.hidden){if(last!==null){time+=(now-last)/1000;if(time>TOTAL)time%=TOTAL;}last=now;render();}requestAnimationFrame(tick);}
-  function setCost(key){if(!Object.hasOwn(metrics.options,key))return;metricKey=key;configureCost();currentPhase='';render();const url=new URL(location.href);url.searchParams.set('cost',key);history.replaceState(null,'',url);}
+  function setCost(key){metricKey='tokens';configureCost();currentPhase='';render();const url=new URL(location.href);url.searchParams.set('cost',metricKey);history.replaceState(null,'',url);}
   document.querySelectorAll('[data-cost-option]').forEach(b=>b.addEventListener('click',()=>setCost(b.dataset.costOption)));
+  function setLayout(next){
+    layout=next==='levels'?'levels':'clean';$('film').dataset.layout=layout;
+    plots.revenue=makePlot('revenue-chart',0,revenueAxis.max,revenueAxis.ticks,v=>'$'+v.toLocaleString('en-US',{maximumFractionDigits:0}));
+    configureCost();currentPhase='';render();resize();
+    document.querySelectorAll('[data-layout-option]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.layoutOption===layout)));
+    const url=new URL(location.href);url.searchParams.set('layout',layout);history.replaceState(null,'',url);
+  }
+  document.querySelectorAll('[data-layout-option]').forEach(b=>b.addEventListener('click',()=>setLayout(b.dataset.layoutOption)));
   $('seek').max=String(TOTAL);$('video-duration').textContent=fmt(TOTAL);
-  window.storyDemo={seek,setCost,play(){setPlaying(true);},restart(){time=0;setPlaying(true);render();},modelRows(arm){return rows[arm];},state(){return {time,playing,metric:metricKey,workload,fleetOnly,windowSeconds:WINDOW,fleetIntro:FLEET_INTRO,runDuration:RUN_DURATION,phase:currentPhase,total:TOTAL,sessionEnd:SESSION_END,modelEnd,modelVideo,stats};}};
+  window.storyDemo={seek,setCost,setLayout,play(){setPlaying(true);},restart(){time=0;setPlaying(true);render();},modelRows(arm){return rows[arm];},state(){return {time,playing,layout,metric:metricKey,workload,fleetOnly,windowSeconds:WINDOW,fleetIntro:FLEET_INTRO,runDuration:RUN_DURATION,phase:currentPhase,total:TOTAL,sessionEnd:SESSION_END,modelEnd,modelVideo,stats};}};
   window.renderAt=seek;
-  resize();render();setPlaying(playing);requestAnimationFrame(tick);
+  resize();setLayout(layout);setPlaying(playing);requestAnimationFrame(tick);
 })();
