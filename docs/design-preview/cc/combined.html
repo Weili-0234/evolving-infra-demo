@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="robots" content="noindex,nofollow">
-  <title>Evolving Infra vs. dynamo+sglang — Agent serving demo</title>
+  <title>Evolving Infra vs. Dynamo+SGLang — Agent serving demo</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
@@ -24,41 +24,41 @@
 <body>
   <main>
     <p class="eyebrow">AGENT SERVING DEMO</p>
-    <h1>Evolving Infra vs. dynamo+sglang</h1>
-    <video id="video" controls playsinline preload="metadata" poster="combined-preview.jpg?v=fleet-v6" aria-label="Combined computer-use and Claude Code demo">
-      <source src="combined-preview.mp4?v=fleet-v6" type="video/mp4">
-      <a href="combined-preview.mp4?v=fleet-v6">Download the combined demo</a>
+    <h1>Evolving Infra vs. Dynamo+SGLang</h1>
+    <video id="video" controls playsinline preload="metadata" poster="combined-preview.jpg?v=fleet-v6-ready" aria-label="Combined computer-use and Claude Code demo">
+      <source src="combined-preview.mp4?v=fleet-v6-ready" type="video/mp4">
+      <a href="combined-preview.mp4?v=fleet-v6-ready">Download the combined demo</a>
     </video>
     <nav aria-label="Video chapters and downloads">
       <button type="button" data-time="7">01 · Computer-use task</button>
       <button type="button" data-time="44.5">02 · 128 computer-use agents</button>
       <button type="button" data-time="66">03 · Claude Code session</button>
       <button type="button" data-time="93.93">04 · 126 coding agents</button>
-      <a id="download" href="combined-preview.mp4?v=fleet-v6" download>Download combined MP4 ↓</a>
+      <a id="download" href="combined-preview.mp4?v=fleet-v6-ready" download>Download combined MP4 ↓</a>
       <a id="cc-link" href="story.html">Interactive CC segment ↗</a><a href="cost-options.html">Compare fleet layouts ↗</a>
       <a href="index.html">All candidates ↗</a>
     </nav>
-    <nav aria-label="Fleet presentation"><button type="button" data-layout="clean">Curves only</button><button type="button" data-layout="levels">Session grid · interactive ↗</button></nav>
+    <nav aria-label="Fleet presentation"><button type="button" data-layout="clean">Curves only</button><button type="button" data-layout="levels">Curves + session grid</button></nav>
 
     <p>Each workload starts with one task, then expands to many concurrent agents. Both fleet scenes show provider revenue, user cost and average cache hit rate from the recorded runs. Choose curves only or a quieter session grid with states grouped into levels.</p>
     <p class="note" id="metric-note"></p>
     <p class="note">In the CC session replay, tool-call time is omitted and terminal text is illustrative. The CUA replay uses measured model waiting times. Fleet curves retain original wall time: 55 minutes for CUA, 60 minutes for CC. User cost includes all input and output charges at the stated token prices. <a href="story.html#methods">CC data and playback details</a> · <a href="story.html?workload=cua&amp;fleet=1#methods">CUA data details</a>.</p>
   </main>
-  <script src="fleet-view.js?v=fleet-v6"></script><script src="cost-metrics.js?v=fleet-v6"></script>
+  <script src="fleet-view.js?v=fleet-v6-ready"></script><script src="cost-metrics.js?v=fleet-v6-ready"></script>
   <script>
     const video = document.getElementById('video'),metrics=window.CostMetrics;
     const query=new URLSearchParams(location.search);
     let layout=query.get('layout')==='levels'?'levels':'clean';
     let key='tokens';
     function selectCost(next,retain){
-      if(!FleetView.isMovieReady(layout)){location.href='cost-options.html?layout=levels&v=fleet-v6';return;}
+      if(!FleetView.isMovieReady(layout)){location.href='cost-options.html?layout=levels&v=fleet-v6-ready';return;}
       key=next;const position=retain?video.currentTime:(query.get('chapter')==='cua'?7:0),playing=retain&&!video.paused;
-      const path=FleetView.moviePath('combined',key,layout)+'?v=fleet-v6';
+      const path=FleetView.moviePath('combined',key,layout)+'?v=fleet-v6-ready';
       video.querySelector('source').src=path;video.load();
       video.addEventListener('loadedmetadata',()=>{video.currentTime=Math.min(position,Math.max(0,video.duration-.1));if(playing)video.play().catch(()=>{});},{once:true});
       document.getElementById('download').href=path;
       document.querySelectorAll('[data-layout]').forEach(b=>{b.setAttribute('aria-pressed',String(b.dataset.layout===layout));b.style.borderColor=b.dataset.layout===layout?'#dd4856':'#555866';});
-      document.getElementById('cc-link').href='story.html?cost='+key+'&layout='+layout+'&v=fleet-v6';
+      document.getElementById('cc-link').href='story.html?cost='+key+'&layout='+layout+'&v=fleet-v6-ready';
       document.getElementById('metric-note').textContent=metrics.options[key].formula+'. '+metrics.options[key].description;
       document.querySelectorAll('[data-cost]').forEach(b=>{b.setAttribute('aria-pressed',String(b.dataset.cost===key));b.style.borderColor=b.dataset.cost===key?'#dd4856':'#555866';});
       const url=new URL(location.href);url.searchParams.set('cost',key);url.searchParams.set('layout',layout);history.replaceState(null,'',url);

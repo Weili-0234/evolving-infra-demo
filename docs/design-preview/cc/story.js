@@ -4,7 +4,7 @@
   const $=id=>document.getElementById(id),qs=new URLSearchParams(location.search);
   const workload=qs.get('workload')==='cua'?'cua':'cc';
   const run=window.FLEET_DATA[workload],WINDOW=run.windowSeconds;
-  document.title=run.label+' — Evolving Infra vs. dynamo+sglang';
+  document.title=run.label+' — Evolving Infra vs. Dynamo+SGLang';
   const fleetOnly=qs.has('fleet')||workload==='cua';
   const metrics=window.CostMetrics;
   let layout=qs.get('layout')==='levels'?'levels':'clean';
@@ -81,7 +81,7 @@
   $('brick-count').textContent='Grouped by state · trailing 60 s average';
   document.querySelectorAll('[data-session-method]').forEach(n=>n.hidden=fleetOnly);
   document.querySelector('[data-chapter="session"]').hidden=fleetOnly;
-  $('workload-method').textContent=run.harness+' · '+run.model+' · '+run.slots.dyn+' / '+run.slots.ours+' concurrent slots (dynamo+sglang / Evolving Infra) · 36 GB300 GPUs per system. The measured window is ['+run.windowStartSeconds+', '+(run.windowStartSeconds+WINDOW)+') seconds after each run starts ('+(WINDOW/60)+' minutes after warmup). Successful non-warmup completions enter the billing cohort. Curves retain original wall time, including tool calls, and interpolate '+run.sampleSeconds+'-second cumulative samples.';
+  $('workload-method').textContent=run.harness+' · '+run.model+' · '+run.slots.dyn+' / '+run.slots.ours+' concurrent slots (Dynamo+SGLang / Evolving Infra) · 36 GB300 GPUs per system. The measured window is ['+run.windowStartSeconds+', '+(run.windowStartSeconds+WINDOW)+') seconds after each run starts ('+(WINDOW/60)+' minutes after warmup). Successful non-warmup completions enter the billing cohort. Curves retain original wall time, including tool calls, and interpolate '+run.sampleSeconds+'-second cumulative samples.';
   $('price-method').textContent='Provider revenue and user cost are valuations at these per-million token rates: $'+run.ratesPerMillion.input.toFixed(2)+' uncached input, $'+run.ratesPerMillion.cachedInput.toFixed(2)+' cached input, $'+run.ratesPerMillion.output.toFixed(2)+' output. User cost divides total charges by input plus output tokens, multiplied by one million. They are not measured payments. The selected-session example and aggregate cohort have different scopes.';
   function axisFor(maximum){
     const target=maximum*1.1/4,power=10**Math.floor(Math.log10(Math.max(target,1e-9)));
@@ -114,11 +114,11 @@
     $('cost-formula').textContent=opt.formula;
     $('cost-tradeoff').textContent=opt.description+' '+opt.tradeoff;
     $('download-movie').hidden=!FleetView.isMovieReady(layout);
-    $('download-movie').href=FleetView.moviePath(fleetOnly?'combined':'story',metricKey,layout)+'?v=fleet-v6';
+    $('download-movie').href=FleetView.moviePath(fleetOnly?'combined':'story',metricKey,layout)+'?v=fleet-v6-ready';
     $('download-movie').textContent=fleetOnly?'Download combined MP4 ↓':'Download MP4 ↓';
-    $('combined-link').href='combined.html?cost='+metricKey+'&layout='+(FleetView.isMovieReady(layout)?layout:'clean')+'&v=fleet-v6';
+    $('combined-link').href='combined.html?cost='+metricKey+'&layout='+(FleetView.isMovieReady(layout)?layout:'clean')+'&v=fleet-v6-ready';
     $('film').dataset.cost=metricKey;
-    $('metric-totals').textContent='Measurement-window totals ('+opt.unit+'): dynamo+sglang '+metrics.format(metrics.value(metrics.fromTotal(run.totals.dyn),metricKey),metricKey)+'; Evolving Infra '+metrics.format(metrics.value(metrics.fromTotal(run.totals.ours),metricKey),metricKey)+'. Provider revenue: '+money(run.totals.dyn.revenue)+' and '+money(run.totals.ours.revenue)+' respectively.';
+    $('metric-totals').textContent='Measurement-window totals ('+opt.unit+'): Dynamo+SGLang '+metrics.format(metrics.value(metrics.fromTotal(run.totals.dyn),metricKey),metricKey)+'; Evolving Infra '+metrics.format(metrics.value(metrics.fromTotal(run.totals.ours),metricKey),metricKey)+'. Provider revenue: '+money(run.totals.dyn.revenue)+' and '+money(run.totals.ours.revenue)+' respectively.';
   }
   configureCost();
   function drawPlot(key,t,values){
@@ -189,7 +189,7 @@
     plots.revenue=makePlot('revenue-chart',0,revenueAxis.max,revenueAxis.ticks,v=>'$'+v.toLocaleString('en-US',{maximumFractionDigits:0}));
     configureCost();currentPhase='';render();resize();
     document.querySelectorAll('[data-layout-option]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.layoutOption===layout)));
-    const url=new URL(location.href);url.searchParams.set('layout',layout);history.replaceState(null,'',url);
+    const url=new URL(location.href);url.searchParams.set('layout',layout);url.searchParams.set('cost','tokens');history.replaceState(null,'',url);
   }
   document.querySelectorAll('[data-layout-option]').forEach(b=>b.addEventListener('click',()=>setLayout(b.dataset.layoutOption)));
   $('seek').max=String(TOTAL);$('video-duration').textContent=fmt(TOTAL);

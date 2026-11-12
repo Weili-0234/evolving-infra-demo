@@ -22,7 +22,7 @@ Each fleet scene has a 0.6-second opening hold, 18 seconds of accelerated
 measured wall time, and a 3.5-second result hold. Fleet scenes default to a clean pair of larger Provider revenue and User cost
 charts, plus a thin cache-hit line with moving marker and percentage.
 `?layout=levels` adds a quieter grid inspired by S4. Both layouts have matching
-CUA and CC video exports using the selected cost definition A. The baseline display name is `dynamo+sglang`.
+CUA and CC video exports using the selected cost definition A. The baseline display name is `Dynamo+SGLang`.
 The preview is silent. It does not replace production `media/merge_demo.mp4`.
 
 The CUA single-task frames come from the existing merged video, SHA-256
@@ -55,7 +55,7 @@ remain 1863.4 s and 651.2 s; the animation is not a new experiment with tool
 latency changed to zero. In particular, the measured cache outcomes still come
 from the original run, with its real tool waits.
 
-Each system's clock stops when its model calls finish: 23:15 for dynamo+sglang and
+Each system's clock stops when its model calls finish: 23:15 for Dynamo+SGLang and
 02:55 for Evolving Infra. Cache hit and user cost update when calls complete;
 neither shows a future whole-session total. Both are undefined before the first
 completion. Cache hit is cumulative cached input divided by cumulative input.
@@ -63,7 +63,7 @@ User cost per million tokens is cumulative charge divided by cumulative input
 plus output tokens, multiplied by one million. Cached input is counted once.
 The annotation beside the clock shows the current first-token wait.
 
-| Whole selected session | dynamo+sglang | Evolving Infra |
+| Whole selected session | Dynamo+SGLang | Evolving Infra |
 |---|---:|---:|
 | Input-token-weighted cache hit | 80.8390% | 94.3499% |
 | Sum of request TTFT | 1335.2 s | 114.4 s |
@@ -145,7 +145,7 @@ payments. The single-session example and aggregate cohort have different scopes.
 
 ### Computer-use agents — 55 minutes
 
-| Metric | dynamo+sglang | Evolving Infra |
+| Metric | Dynamo+SGLang | Evolving Infra |
 |---|---:|---:|
 | Completed model calls | 6,652 | 14,199 |
 | Provider revenue | $95.9220 | $204.7980 |
@@ -156,7 +156,7 @@ payments. The single-session example and aggregate cohort have different scopes.
 
 ### Coding agents — 60 minutes
 
-| Metric | dynamo+sglang | Evolving Infra |
+| Metric | Dynamo+SGLang | Evolving Infra |
 |---|---:|---:|
 | Completed model calls | 7,710 | 21,302 |
 | Provider revenue | $459.7243 | $1,082.7686 |
@@ -175,6 +175,6 @@ these differences rather than assuming every cost definition must decrease.
 `js/shift-data.js` contains the recorded counts from the report's
 `figures/data/eval_shift_splits.csv`, with a source SHA-256. Both the Evidence
 animation and the compute-allocation demo use it. Each of the nine separate
-node boxes represents four GB300 GPUs. During dynamo+sglang restarts the recorded
+node boxes represents four GB300 GPUs. During Dynamo+SGLang restarts the recorded
 prefill and decode counts sum to eight; the remaining node is explicitly
 unavailable. Nodes are grouped by role, not identified by physical node ID.

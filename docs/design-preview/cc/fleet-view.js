@@ -25,5 +25,5 @@
     }};
   }
   const moviePath=(kind,key,layout)=>(kind==='combined'?(key==='tokens'?'combined-preview':'combined-'+key):'story'+(key==='tokens'?'':'-'+key))+(layout==='levels'?'-levels':'')+'.mp4';
-  window.FleetView={prepare,moviePath,isMovieReady:layout=>layout!=='levels'};
+  window.FleetView={prepare,moviePath,isMovieReady:()=>true};
 })();

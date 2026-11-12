@@ -27,10 +27,10 @@
   function select(next){
     key='tokens';document.querySelectorAll('[data-option]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.option===key)));
     const d=descriptions[key];$('meaning').textContent=d[0];$('formula').textContent=d[1];$('tradeoff').textContent=d[2];
-    $('full-story').href=workload==='cc'?'story.html?cost='+key+'&layout='+layout+'&v=fleet-v6':'combined.html?cost='+key+'&chapter=cua&layout='+(FleetView.isMovieReady(layout)?layout:'clean')+'&v=fleet-v6';
+    $('full-story').href=workload==='cc'?'story.html?cost='+key+'&layout='+layout+'&v=fleet-v6-ready':'combined.html?cost='+key+'&chapter=cua&layout='+(FleetView.isMovieReady(layout)?layout:'clean')+'&v=fleet-v6-ready';
     $('movie').hidden=!FleetView.isMovieReady(layout);
     $('combined').textContent=FleetView.isMovieReady(layout)?'看完整合片 ↗':'纯曲线合片 ↗';
-    $('combined').href='combined.html?cost='+key+'&layout='+(FleetView.isMovieReady(layout)?layout:'clean')+'&v=fleet-v6';$('movie').href=FleetView.moviePath('combined',key,layout)+'?v=fleet-v6';
+    $('combined').href='combined.html?cost='+key+'&layout='+(FleetView.isMovieReady(layout)?layout:'clean')+'&v=fleet-v6-ready';$('movie').href=FleetView.moviePath('combined',key,layout)+'?v=fleet-v6-ready';
     if(api()&&api().state().workload===workload){api().setCost(key);api().setLayout(layout);seek();}
     const url=new URL(location.href);url.searchParams.set('cost',key);url.searchParams.set('workload',workload);url.searchParams.set('layout',layout);history.replaceState(null,'',url);
   }
@@ -40,7 +40,7 @@
     const atEnd=Math.abs(minute-data[workload].windowSeconds/60)<.01;
     workload=next;minute=atEnd?data[workload].windowSeconds/60:Math.min(minute,data[workload].windowSeconds/60);
     setPlaying(false);updateCards();select(key);
-    iframe.src='story.html?film=1&fleet=1&workload='+workload+'&cost='+key+'&layout='+layout+'&t=22&v=fleet-v6';
+    iframe.src='story.html?film=1&fleet=1&workload='+workload+'&cost='+key+'&layout='+layout+'&t=22&v=fleet-v6-ready';
   }
   function setPlaying(value){playing=value;last=null;$('play').textContent=value?'暂停':'播放并发场景';}
   document.querySelectorAll('[data-option]').forEach(b=>b.addEventListener('click',()=>select(b.dataset.option)));
