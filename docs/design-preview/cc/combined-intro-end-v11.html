@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Evolving Infra vs. Dynamo+SGLang — Demo with opening and end card (v11)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; color: #f1f2f5; background: #0b0c12; font: 18px/1.5 'Source Sans 3', system-ui, sans-serif; }
+    main { width: min(1600px, calc(100% - 32px)); margin: 32px auto 48px; }
+    .eyebrow { margin: 0; color: #dd4856; font-size: 13px; font-weight: 700; letter-spacing: .12em; }
+    h1 { margin: 8px 0 20px; font-size: clamp(26px, 4vw, 38px); font-weight: 600; }
+    video { display: block; width: 100%; aspect-ratio: 16 / 9; background: #090a0d; }
+    nav { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 24px; margin: 20px 0; }
+    button { border: 1px solid #555866; background: none; color: inherit; padding: 8px 14px; font: inherit; cursor: pointer; }
+    button:hover { border-color: #dd4856; }
+    a { color: #e89ba4; text-underline-offset: 3px; }
+    p { color: #b9bcc6; max-width: 960px; }
+    .note { font-size: 15px; }
+  </style>
+</head>
+<body>
+  <main>
+    <p class="eyebrow">AGENT SERVING DEMO WITH OPENING AND END CARD</p>
+    <h1>Evolving Infra vs. Dynamo+SGLang</h1>
+    <video id="video" controls playsinline preload="metadata" poster="demo-poster-v8.jpg?v=intro-end-v8" aria-label="Combined computer-use and Claude Code demo with an opening scene, summary charts and an end card">
+      <source src="combined-intro-end-v11.mp4?v=intro-end-v11" type="video/mp4">
+      <a href="combined-intro-end-v11.mp4?v=intro-end-v11">Download the demo</a>
+    </video>
+    <nav aria-label="Video chapters and downloads">
+      <button type="button" data-time="0">00 · Evolving Infra and partners</button>
+      <button type="button" data-time="9.13">01 · We breathe life into infra</button>
+      <button type="button" data-time="13.93">02 · Evolving Infra vs Dynamo+SGLang</button>
+      <button type="button" data-time="20.43">03 · One computer-use agent</button>
+      <button type="button" data-time="42.9">04 · 128 agents across the cluster</button>
+      <button type="button" data-time="59.03">05 · Computer-use summary</button>
+      <button type="button" data-time="71.63">06 · One coding agent</button>
+      <button type="button" data-time="88.87">07 · 126 agents across the cluster</button>
+      <button type="button" data-time="105">08 · Coding summary</button>
+      <button type="button" data-time="117.6">09 · Try Evolving Infra</button>
+      <a href="combined-intro-end-v11.mp4?v=intro-end-v11" download>Download MP4 ↓</a>
+      <a href="summary.html?workload=cua">Interactive summary charts ↗</a>
+      <a href="bookends-v11.html?scene=intro">Opening and end card only ↗</a>
+      <a href="demo-poster-v8.jpg">Site poster (unchanged since v8) ↗</a>
+      <a href="combined-intro-end-v10.html">Version 10 (sentence centered on its own) ↗</a>
+      <a href="tagline-options-v11.html">Sentence screen options A, B and C ↗</a>
+      <a href="combined-intro-end-v9.html">Version 9 (2:08, institutions hold one bar longer) ↗</a>
+      <a href="combined-intro-end-v8.html">Version 8 (2:38, shorter institutions hold) ↗</a>
+      <a href="combined-intro-end-v7.html">Version 7 (HAN Lab first, server grid) ↗</a>
+      <a href="combined-intro-end-v6-1.html">Version 6.1 (static logo row) ↗</a>
+      <a href="combined-intro-end-v6.html">Version 6 (white logo card) ↗</a>
+      <a href="combined-intro-end-v5b.html">Version 5b ↗</a>
+      <a href="combined-intro-end-v5a.html">Version 5a ↗</a>
+      <a href="combined-intro-end-v4.html">Version 4 (not beat-locked) ↗</a>
+      <a href="combined-intro-end-v3.html">Version 3 (shorter hold, no lab credit) ↗</a>
+      <a href="combined-intro-end-v2.html">Version 2 (one-line opening) ↗</a>
+      <a href="combined-intro-end.html">Earlier version with the Genesis quote ↗</a>
+      <a href="combined-summary.html">Version without opening and end card ↗</a>
+    </nav>
+    <p>This preview opens with the Evolving Infra wordmark, visible from the first frame. It turns into our gear-and-orbit icon, and the participating institutions appear under it: MIT HAN Lab and the UC Berkeley Sky Computing Lab, then Georgia Tech, UIUC, NVIDIA and OpenAI. Then the institutions fade out, but the icon stays: it moves to the left of our sentence, “We breathe life into infra, so it evolves with your workload.” On the first line, “life” breathes once and the orbit dot pulses. On the second line, the gear turns a quarter turn. A short title card follows. The institutions stay on screen for about three seconds. The agent recordings play 1.75 times faster than before (the on-screen speed labels are updated to match), final results stay on screen long enough to read, and each summary card holds a little longer. The opening lands on the beats of the music. The end card has QR codes for the code on GitHub and for the website, and the MIT HAN Lab credit.</p>
+    <p class="note">The Discord and WeChat links are kept in the GitHub README, because those invites expire. Each summary uses the same completed model calls as the fleet charts. Computer-use agents: 55-minute window, 6,652 calls on Dynamo+SGLang and 14,199 on Evolving Infra. Coding agents: 60-minute window, 7,710 and 21,302 calls.</p>
+  </main>
+  <script>
+    const video = document.getElementById('video');
+    document.querySelectorAll('[data-time]').forEach(button => button.addEventListener('click', () => {
+      video.currentTime = Number(button.dataset.time);
+      video.play().catch(() => {});
+    }));
+  </script>
+</body>
+</html>
