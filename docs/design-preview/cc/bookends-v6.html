@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow"><title>Opening and end card (v6) — Evolving Infra demo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Space+Grotesk:wght@600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0b0c12;--fg:#eef0f4;--muted:#8c929c;--soft:#a9aeb8;--red:#c92336;--sans:'Source Sans 3',Arial,sans-serif;color-scheme:dark}
+*{box-sizing:border-box}body{margin:0;color:var(--fg);background:#050608;font:16px/1.5 var(--sans)}
+.page{width:min(1440px,calc(100% - 32px));margin:16px auto 32px}
+.wrap{position:relative;width:100%;aspect-ratio:16/9;overflow:hidden;background:var(--bg)}
+.stage{position:absolute;left:0;top:0;width:1920px;height:1080px;transform-origin:top left;background:linear-gradient(180deg,#08090c,#0f1016);overflow:hidden}
+.scene{position:absolute;inset:0;visibility:hidden}
+.scene p,.scene h1{margin:0}
+/* opening */
+.quote{position:absolute;left:0;right:0;top:428px;text-align:center;font:italic 400 58px/1.2 var(--sans);color:var(--fg)}
+.cite{position:absolute;left:0;right:0;top:526px;text-align:center;font:600 28px/1.2 var(--sans);letter-spacing:.08em;color:var(--muted)}
+.grid{position:absolute;left:438px;top:520px;width:1044px;height:278px}
+.blk{position:absolute;width:100px;height:56px;border-radius:5px;border:2px solid #4a505b;background:#22262e}
+.blk i{position:absolute;left:12px;right:30px;height:3px;border-radius:2px;background:#3a404a}
+.blk i:nth-child(1){top:14px}.blk i:nth-child(2){top:24px}.blk i:nth-child(3){top:34px}
+.blk b{position:absolute;right:11px;top:21px;width:9px;height:9px;border-radius:50%;background:#4a505b}
+.sweep{position:absolute;top:350px;width:320px;height:620px;margin-left:-160px;pointer-events:none;
+  background:radial-gradient(ellipse 50% 50% at 50% 50%,rgba(255,238,238,.20),rgba(255,238,238,.07) 55%,rgba(255,238,238,0) 100%)}
+.tagline{position:absolute;left:0;right:0;top:300px;text-align:center;font:600 84px/1.15 var(--sans);color:var(--fg)}
+.tagline em{font-style:normal;color:var(--red)}
+.subline{position:absolute;left:0;right:0;top:418px;text-align:center;font:400 40px/1.2 var(--sans);color:var(--soft)}
+.bg{position:absolute;inset:0;width:1920px;height:1080px;display:none}
+/* end card */
+.end-title{position:absolute;left:0;right:0;top:108px;text-align:center;font:600 66px/1.2 var(--sans);color:var(--fg)}
+.end-title em{font-style:normal;color:var(--red)}
+.qr{position:absolute;top:230px;width:520px;text-align:center}
+.qr .qr-label{display:block;font:600 38px/1.2 var(--sans);color:var(--fg)}
+.qr img{display:block;width:369px;height:369px;margin:22px auto 0;border-radius:8px;background:#fff;image-rendering:pixelated}
+.qr .qr-url{display:block;margin-top:22px;font:500 29px/1.3 var(--sans);color:var(--soft)}
+.join{position:absolute;left:0;right:0;top:794px;text-align:center;font:400 31px/1.4 var(--sans);color:var(--soft)}
+.credit{position:absolute;left:0;right:0;top:874px;display:flex;justify-content:center;line-height:0}
+.credit-tile{display:block;padding:14px 18px;border-radius:8px;background:#fff}
+.credit-tile img{display:block;width:432px;height:72px}
+.light{position:absolute;inset:0;background:#ffffff}
+.logo-row{position:absolute;left:50%;top:50%;display:flex;align-items:center;gap:64px;transform:translate(-50%,-50%);transform-origin:50% 50%;white-space:nowrap}
+.logo-row .lockup{display:block;width:721px;height:120px}
+.logo-row .rule{display:block;width:2px;height:120px;background:#cfcac2}
+.logo-row .ours{display:flex;align-items:center;gap:22px}
+.logo-row .ours img{display:block;width:177px;height:120px}
+.logo-row .wordmark{font:600 46px/1 'Space Grotesk',Arial,sans-serif;letter-spacing:.14em;color:#232328}
+.overlay{position:absolute;inset:0;width:1920px;height:1080px;opacity:0;pointer-events:none}
+.black{position:absolute;inset:0;background:#000;opacity:0;pointer-events:none}
+/* player */
+.player{display:flex;gap:12px;align-items:center;margin-top:12px;flex-wrap:wrap}
+.player button{color:inherit;background:#141720;border:1px solid #3a3d48;border-radius:4px;padding:6px 12px;font:inherit;font-size:14px;cursor:pointer}
+.player button[aria-pressed=true]{border-color:var(--red);color:#ef9aa4}
+.player input{flex:1;min-width:120px;accent-color:var(--red)}
+.player span{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.note{color:#b9bcc6;font-size:15px;max-width:960px}
+body.export{background:var(--bg)}body.export .page{width:1920px;max-width:none;margin:0}body.export .player,body.export .note{display:none}
+</style>
+<script src="bookends-v6.js?v=intro-end-v6" defer></script>
+</head>
+<body>
+<main class="page">
+  <div class="wrap" id="wrap"><div class="stage" id="stage" role="img" aria-label="Opening scene and end card of the Evolving Infra demo">
+    <section class="scene" id="intro">
+      <img class="bg" id="bg" alt="">
+      <div class="grid" id="grid"></div>
+      <div class="sweep" id="sweep"></div>
+      <h1 class="tagline" id="tagline">We breathe <em>life</em> into infra.</h1>
+      <p class="subline" id="subline">so it evolves with your workload.</p>
+      <div class="light" id="light"><div class="logo-row" id="logo-row"><img class="lockup" src="han-lab-lockup-120.png?v=intro-end-v6" width="721" height="120" alt="MIT HAN Lab"><span class="rule"></span><span class="ours"><img src="evolving-infra-brand-mark.png?v=intro-end-v6" width="177" height="120" alt=""><span class="wordmark">EVOLVING INFRA</span></span></div></div>
+    </section>
+    <section class="scene" id="end">
+      <h1 class="end-title">Try <em>Evolving Infra</em></h1>
+      <div class="qr" style="left:380px"><span class="qr-label">Code</span><img src="qr-code.svg?v=intro-end-v1" width="369" height="369" alt="QR code for https://github.com/mit-han-lab/EvolvingInfra"><span class="qr-url">github.com/mit-han-lab/EvolvingInfra</span></div>
+      <div class="qr" style="left:1020px"><span class="qr-label">Website</span><img src="qr-website.svg?v=intro-end-v1" width="369" height="369" alt="QR code for https://inference-rsi.com"><span class="qr-url">inference-rsi.com</span></div>
+      <p class="join">Join us on Discord and WeChat — links in the GitHub README.</p>
+      <div class="credit"><span class="credit-tile"><img src="han-lab-lockup-72.png?v=intro-end-v6" width="432" height="72" alt="MIT HAN Lab"></span></div>
+    </section>
+    <div class="black" id="black"></div>
+    <img class="overlay" id="from" alt="">
+  </div></div>
+  <nav class="player" aria-label="Scene controls">
+    <button type="button" id="play">Pause</button>
+    <button type="button" data-scene="intro">Opening</button><button type="button" data-scene="end">End card</button>
+    <input type="range" id="seek" min="0" max="6" step="0.01" value="0" aria-label="Position"><span id="clock">0.0 s</span>
+  </nav>
+  <p class="note">Opening of v6 (logos, then the beat-locked tagline scene; the slowed title card is rendered separately) and end card (6 s) of the combined demo video: the server grid comes alive, then our tagline: “We breathe life into infra,” followed by “so it evolves with your workload.”</p>
+</main>
+</body>
+</html>
