@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Evolving Infra vs. Dynamo+SGLang — Demo with opening and end card (v3)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; color: #f1f2f5; background: #0b0c12; font: 18px/1.5 'Source Sans 3', system-ui, sans-serif; }
+    main { width: min(1600px, calc(100% - 32px)); margin: 32px auto 48px; }
+    .eyebrow { margin: 0; color: #dd4856; font-size: 13px; font-weight: 700; letter-spacing: .12em; }
+    h1 { margin: 8px 0 20px; font-size: clamp(26px, 4vw, 38px); font-weight: 600; }
+    video { display: block; width: 100%; aspect-ratio: 16 / 9; background: #090a0d; }
+    nav { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 24px; margin: 20px 0; }
+    button { border: 1px solid #555866; background: none; color: inherit; padding: 8px 14px; font: inherit; cursor: pointer; }
+    button:hover { border-color: #dd4856; }
+    a { color: #e89ba4; text-underline-offset: 3px; }
+    p { color: #b9bcc6; max-width: 960px; }
+    .note { font-size: 15px; }
+  </style>
+</head>
+<body>
+  <main>
+    <p class="eyebrow">AGENT SERVING DEMO WITH OPENING AND END CARD</p>
+    <h1>Evolving Infra vs. Dynamo+SGLang</h1>
+    <video id="video" controls playsinline preload="metadata" poster="combined-intro-end-v3.jpg?v=intro-end-v3" aria-label="Combined computer-use and Claude Code demo with an opening scene, summary charts and an end card">
+      <source src="combined-intro-end-v3.mp4?v=intro-end-v3" type="video/mp4">
+      <a href="combined-intro-end-v3.mp4?v=intro-end-v3">Download the demo</a>
+    </video>
+    <nav aria-label="Video chapters and downloads">
+      <button type="button" data-time="0">00 · Opening</button>
+      <button type="button" data-time="10.8">01 · One computer-use agent</button>
+      <button type="button" data-time="47.7">02 · 128 agents across the cluster</button>
+      <button type="button" data-time="72">03 · Computer-use summary</button>
+      <button type="button" data-time="82">04 · One coding agent</button>
+      <button type="button" data-time="109.33">05 · 126 agents across the cluster</button>
+      <button type="button" data-time="133.63">06 · Coding summary</button>
+      <button type="button" data-time="143.63">07 · Try Evolving Infra</button>
+      <a href="combined-intro-end-v3.mp4?v=intro-end-v3" download>Download MP4 ↓</a>
+      <a href="summary.html?workload=cua">Interactive summary charts ↗</a>
+      <a href="bookends-v3.html?scene=intro">Opening and end card only ↗</a>
+      <a href="combined-intro-end-v2.html">Version 2 (one-line opening) ↗</a>
+      <a href="combined-intro-end.html">Earlier version with the Genesis quote ↗</a>
+      <a href="combined-summary.html">Version without opening and end card ↗</a>
+    </nav>
+    <p>This preview adds a 3.8-second opening before the title card and a 6-second end card after the coding summary. In the opening, a light passes over a grid of idle servers and brings each one to life, then our tagline appears: “We breathe life into infra,” followed by “so it evolves with your workload.” The end card has QR codes for the code on GitHub and for the website. The rest of the video is unchanged. The soundtrack starts with the opening.</p>
+    <p class="note">The Discord and WeChat links are kept in the GitHub README, because those invites expire. Each summary uses the same completed model calls as the fleet charts. Computer-use agents: 55-minute window, 6,652 calls on Dynamo+SGLang and 14,199 on Evolving Infra. Coding agents: 60-minute window, 7,710 and 21,302 calls.</p>
+  </main>
+  <script>
+    const video = document.getElementById('video');
+    document.querySelectorAll('[data-time]').forEach(button => button.addEventListener('click', () => {
+      video.currentTime = Number(button.dataset.time);
+      video.play().catch(() => {});
+    }));
+  </script>
+</body>
+</html>
