@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Tagline options (v11) — Evolving Infra demo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; color: #f1f2f5; background: #0b0c12; font: 18px/1.5 'Source Sans 3', system-ui, sans-serif; }
+    main { width: min(1280px, calc(100% - 32px)); margin: 32px auto 48px; }
+    .eyebrow { margin: 0; color: #dd4856; font-size: 13px; font-weight: 700; letter-spacing: .12em; }
+    h1 { margin: 8px 0 12px; font-size: clamp(26px, 4vw, 38px); font-weight: 600; }
+    h2 { margin: 0 0 6px; font-size: clamp(21px, 3vw, 27px); font-weight: 600; }
+    section { margin: 36px 0 0; padding-top: 24px; border-top: 1px solid #262833; }
+    video { display: block; width: 100%; aspect-ratio: 16 / 9; background: #090a0d; }
+    nav { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 24px; margin: 14px 0 0; }
+    button { border: 1px solid #555866; background: none; color: inherit; padding: 8px 14px; font: inherit; cursor: pointer; }
+    button:hover { border-color: #dd4856; }
+    a { color: #e89ba4; text-underline-offset: 3px; }
+    p { color: #b9bcc6; max-width: 960px; margin: 0 0 14px; }
+    .note { font-size: 15px; }
+  </style>
+</head>
+<body>
+  <main>
+    <p class="eyebrow">DESIGN OPTIONS FOR THE SENTENCE SCREEN</p>
+    <h1>“We breathe life into infra, so it evolves with your workload.”</h1>
+    <p>Three ways to make the sentence screen less static. Each clip is 7 seconds with the soundtrack: it starts one beat before the institutions fade out and ends one second into the title card. The timing is the same as in version 10: line 1 lands on the same beat, line 2 lands two beats later, the hold is the same length and the title card follows on the same beat. So the option you choose replaces only the opening part of the video.</p>
+    <p class="note">In all three options, the faint horizontal band in the background is gone. While the institutions fade out, the background changes to the same smooth gradient as the title card. The video after the title card starts from black, so nothing cuts directly from this screen to the old recordings.</p>
+    <nav><button type="button" id="playall">Play all three in sequence</button><a href="combined-intro-end-v10.html">Current full video (version 10) ↗</a></nav>
+
+    <section aria-labelledby="ha">
+      <h2 id="ha">A — continuity + breath</h2>
+      <p>The institutions and the wordmark fade out, but the icon stays. In one beat it moves to the left of the sentence, and the icon and the two lines become one group in the center. On line 1’s beat, “life” breathes once (a red glow and a small scale-up and back, over one beat) and the orbit dot pulses at the same time. On line 2’s beat, the gear turns a quarter turn and “evolves” glows red. The gear and orbit keep turning slowly during the hold.</p>
+      <video controls playsinline preload="metadata" poster="tagline-v11-A.jpg?v=v11opt" aria-label="Option A: icon moves next to the sentence; life breathes; the gear turns on evolves">
+        <source src="tagline-v11-A.mp4?v=v11opt" type="video/mp4"><a href="tagline-v11-A.mp4">Download option A</a>
+      </video>
+    </section>
+
+    <section aria-labelledby="hb">
+      <h2 id="hb">B — pulse line</h2>
+      <p>The sentence stays centered as in version 10. A thin full-width line sits under it. It starts flat and gray. On line 1’s beat, a red heartbeat moves along it from left to right in one beat. On line 2’s beat, the line becomes a smooth red workload curve with a light fill under it, and the curve keeps moving gently during the hold.</p>
+      <video controls playsinline preload="metadata" poster="tagline-v11-B.jpg?v=v11opt" aria-label="Option B: a gray line under the sentence gets a heartbeat, then becomes a moving workload curve">
+        <source src="tagline-v11-B.mp4?v=v11opt" type="video/mp4"><a href="tagline-v11-B.mp4">Download option B</a>
+      </video>
+    </section>
+
+    <section aria-labelledby="hc">
+      <h2 id="hc">C — kinetic type</h2>
+      <p>The two lines have the same size and are centered. On line 1’s beat, “life” is drawn in from left to right with a soft red glow. On line 2’s beat, “evolves” first appears in a rigid gray monospace font. During one beat it changes into the red font of the rest of the sentence: the two versions cross-fade, and the letter spacing and weight change.</p>
+      <video controls playsinline preload="metadata" poster="tagline-v11-C.jpg?v=v11opt" aria-label="Option C: life is drawn in with a red glow; evolves changes from gray monospace to red">
+        <source src="tagline-v11-C.mp4?v=v11opt" type="video/mp4"><a href="tagline-v11-C.mp4">Download option C</a>
+      </video>
+    </section>
+  </main>
+  <script>
+    const vids = [...document.querySelectorAll('video')];
+    vids.forEach((v, i) => v.addEventListener('ended', () => { if (window.chain && vids[i + 1]) { vids[i + 1].scrollIntoView({ behavior: 'smooth', block: 'center' }); vids[i + 1].currentTime = 0; vids[i + 1].play().catch(() => {}); } else window.chain = false; }));
+    document.getElementById('playall').addEventListener('click', () => { window.chain = true; vids.forEach(v => v.pause()); vids[0].scrollIntoView({ behavior: 'smooth', block: 'center' }); vids[0].currentTime = 0; vids[0].play().catch(() => {}); });
+  </script>
+</body>
+</html>
